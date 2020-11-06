@@ -8,7 +8,7 @@ int add(int a, int b) {
 int main() {
     int j; 
     // Ab C99 darf man Schleifenvariable in der Schleifenanweisung definieren.
-    // Vergl. Java und C++
+    // Vergleiche: Java und C++
     for (int i = 0; i<10; i++) {
         j = i + 10;
         printf("i=%d j=%d i+j=%d\n",i,j,add(i,j));
