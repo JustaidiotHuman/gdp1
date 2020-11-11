@@ -1,6 +1,6 @@
 # Ignore derived files
 *.o
-bin/**
+bin/
 
 # Ignore archives and third party docs
 *.zip
@@ -13,12 +13,12 @@ bin/**
 *.log
 
 # ignore derived files from java and ant
-Bak/**
-Scheduler/output/**
-utest.report/**
-cert.report/**
-classes/**
-dist/**
+Bak/
+Scheduler/output/
+utest.report/
+cert.report/
+classes/
+dist/
 
 # Eclipse config
 #.pydevproject
