@@ -31,7 +31,7 @@ LDFLAGS =
 
 #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
 # default for -mpreferred-stack-boundary=4 on 32/64bit machines
-EXTRA_FLAGS = -mpush-args -mno-accumulate-outgoing-args -mpreferred-stack-boundary=4
+EXTRA_FLAGS = -fno-pic -mpush-args -mno-accumulate-outgoing-args -mpreferred-stack-boundary=4
 #EXTRA_FLAGS += -fomit-frame-pointer
 #EXTRA_FLAGS = 
 

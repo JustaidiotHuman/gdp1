@@ -1,4 +1,4 @@
-Demo: zeige stack frames in GDB am Beispiel swap-V1
+Demo: zeige Stack Frames in GDB am Beispiel swap-V1
 ===================================================
 
 Ausführung in virtueller Maschine (32Bit System)
@@ -23,8 +23,6 @@ gdbtui -q bin/swap-V1
 
 (gdb) s
 ...
-
-bis zum Ende
 
 #-------------------------------------
 # Demo 2: Mit C annotierter Assembler
@@ -125,7 +123,8 @@ Falls in aktueller Session noch nicht geschehen
 (gdb) break main
 
 (gdb) run
-(gdb) set disassembly-flavor intel
+#(gdb) set disassembly-flavor intel
+(gdb) set disassembly-flavor att
 (gdb) layout asm
 
 Hint: zurück mit 'layout src'
@@ -142,7 +141,7 @@ GDB-Skript für Animation des Stacks laden
 Bezugspunkt für die Ausgabe des Stacks setzen: bfp - base frame pointer
 (gdb) set_bfp 
 
-Ausgabe des Stacks vom aktuellen Stackpointer bis zum bfp
+Ausgabe des Stacks vom aktuellen Stackpointer bis hinunter zum bfp
 
 (gdb) stack_all32
 
@@ -277,7 +276,7 @@ Wir überspringen die Einrichtung des Stack-Frames (die ersten drei Befehle)
 
 Memory dump zu Beginn von Swap
 
-(gdb) winheight asm 7
+# (gdb) winheight asm 7
 (gdb) stack_all32
 
 ----------- 
