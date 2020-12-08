@@ -13,6 +13,7 @@
 TARGETS += $(BIN_DIR)/arraySum
 TARGETS += $(BIN_DIR)/arrayMean
 TARGETS += $(BIN_DIR)/arrayInit
+TARGETS += $(BIN_DIR)/arrayInit-2
 TARGETS += $(BIN_DIR)/dynamicArrayC99
 
 #################################################
