@@ -1,6 +1,6 @@
 // Example for a dynamically allocated 2-dimensional array of integers
 // We use the storage scheme of an array of pointers that point
-// to arrays of int
+// to arrays of int (APA)
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -10,6 +10,16 @@
 #define OK 0
 #define ERROR 1
 
+void free_array(int** pa, int rows){
+  // For each row free the array of its columns
+  for (int row = 0; row < rows; row++) {
+    if (pa[row] == NULL) { break; }
+    free(pa[row]);
+  }
+  // Free the array of pointers
+  free(pa);
+}
+
 int main (void) {
   // Loop vars
   int row,col;
@@ -17,19 +27,24 @@ int main (void) {
   // A pointer to an array of pointers that point to arrays of int
   int** da;
 
-  // Allocate memory for array of pointers with ROW elements
+  // Allocate memory for array of pointers with ROWS elements
   // Store address in base pointer da
-  da = malloc(sizeof(int*) * ROWS);
+  // Use calloc in order to initialize the array with NULL pointers!
+  // This is crucial for the partial cleanup.
+  da = calloc(ROWS , sizeof(int*));
   if (da == NULL) {
     printf("Out of memory\n");
+    // nothing to cleanup
     return ERROR;
   }
 
   // Allocate array of colums for each row and store pointers in array
   for (row = 0; row < ROWS; row++) {
-    da[row] = malloc(sizeof(int) * COLS);
+    da[row] = malloc(COLS * sizeof(int));
     if (da[row] == NULL) {
       printf("Out of memory\n");
+      // do partial cleanup
+      free_array(da, ROWS); 
       return ERROR;
     }
   }
@@ -53,7 +68,7 @@ int main (void) {
       printf("da[%d][%d] = %d at %p\n",
           row,col,
           da[row][col],
-          &da[row][col]
+          &(da[row][col])
           // Alternative syntax
           // *(da+row) + col
           ); 
@@ -62,13 +77,7 @@ int main (void) {
   }
 
   // In the end free the allocated memory
-  // For each row free the array of its columns
-  for (row = 0; row < ROWS; row++) {
-    free(da[row]);
-  }
-  // Free the array of pointers
-  free(da);
+  free_array(da, ROWS); 
 
   return OK;
-
 }
