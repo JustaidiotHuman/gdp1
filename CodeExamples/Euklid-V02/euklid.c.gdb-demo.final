@@ -12,13 +12,13 @@ int main (void) {
     getchar(); // Stop für Einstieg des gdb in zweitem Fenster
     // im zweiten Fenster:
     //   gdbtui -q -p `pidof bin/euklid`
-    // gdb> break 20
+    // gdb> break euklid.c:20
     // gdb> cont
     //
     // Im ersten Fenster nun Taste druecken fuer getchar();
 
     printf("Bitte x eingeben: ");
-    fflush(stdout);
+    //fflush(stdout);
 
     // Ohne fflush() wird Ausgabe erst bei Ausführung von scanf() erzwungen.
     z=4711; // dummy
@@ -26,7 +26,7 @@ int main (void) {
     scanf("%d", &x);
 
     printf("Bitte y eingeben: ");
-    fflush(stdout);
+    //fflush(stdout);
 
     z=2*z; // dummy
 
