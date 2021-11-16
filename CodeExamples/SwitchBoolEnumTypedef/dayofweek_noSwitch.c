@@ -73,6 +73,7 @@ int main (void) {
         printf("An diesem Tag habe die meisten Arbeitnehmer frei\n");
     } else {
         printf("\nEinen Wochentag mit dieser Nummer gibt es nicht\n");
+        return ERROR;
     }
 
     return OK;

@@ -84,6 +84,7 @@ int main (void) {
             break;
         default:
             printf("\nEinen Wochentag mit dieser Nummer gibt es nicht\n");
+            return ERROR;
     }
 
     return OK;
