@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Achtung:
+// Sobald der erste Case einen Match erzeugt, werden allen Anweisungen
+// danach ausgeführt, solange bis das erste break kommt.
+// 
+// Im Beispiel unten:
+// Es werden die Anweisungen aus case 3:
+// und danach auch die aus case 4: ausgeführt, obwohl val == 3.
+// Es werden also auch Zweige ausgeführt, deren Case-Wert nicht passt!
+
 int main(void){
   int val = 3;
 
