@@ -30,6 +30,8 @@ TARGETS += $(BIN_DIR)/complex-V2
 TARGETS += $(BIN_DIR)/complex-V3
 TARGETS += $(BIN_DIR)/complex-V4
 
+TARGETS += $(BIN_DIR)/returnStruct
+
 #################################################
 # There is no need to edit below this line
 #################################################
