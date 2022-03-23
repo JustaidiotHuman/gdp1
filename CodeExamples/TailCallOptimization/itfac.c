@@ -71,7 +71,6 @@ int fac(int n){
 
 // -------------------------------------------
 
-/*
 int itfac(int n, int acc){
   int n_next;
   int acc_next;
@@ -89,12 +88,12 @@ int itfac(int n, int acc){
   return res;
 }
 
-*/
-
+/*
 int itfac(int n, int acc){
   if (n != 0) {
       acc = itfac(n-1, n*acc); // tail-recursive call
   }
   return acc;
 }
+*/
 
