@@ -23,14 +23,15 @@
 //
 // Reading symbols from bin/itfac...fertig.
 // Dump of assembler code for function itfac:
-//    0x0000000000000720 <+0>:	test   %edi,%edi
-//    0x0000000000000722 <+2>:	mov    %esi,%eax
-//    0x0000000000000724 <+4>:	je     0x738 <itfac+24>
-//    0x0000000000000726 <+6>:	nopw   %cs:0x0(%rax,%rax,1)
-//    0x0000000000000730 <+16>:	imul   %edi,%eax
-//    0x0000000000000733 <+19>:	sub    $0x1,%edi
-//    0x0000000000000736 <+22>:	jne    0x730 <itfac+16>
-//    0x0000000000000738 <+24>:	repz retq
+//    0x00000620 <+0>:	mov    0x4(%esp),%edx
+//    0x00000624 <+4>:	mov    0x8(%esp),%eax
+//    0x00000628 <+8>:	test   %edx,%edx
+//    0x0000062a <+10>:	je     0x638 <itfac+24>
+//    0x0000062c <+12>:	lea    0x0(%esi,%eiz,1),%esi
+//    0x00000630 <+16>:	imul   %edx,%eax
+//    0x00000633 <+19>:	sub    $0x1,%edx
+//    0x00000636 <+22>:	jne    0x630 <itfac+16>
+//    0x00000638 <+24>:	repz ret
 // End of assembler dump.
 // (gdb)
 //
