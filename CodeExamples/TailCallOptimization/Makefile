@@ -10,14 +10,17 @@
 
 # Please add all targets in ./bin here
 
-TARGETS += $(BIN_DIR)/itfac
+TARGETS += $(BIN_DIR)/fac
+TARGETS += $(BIN_DIR)/itfac1
+TARGETS += $(BIN_DIR)/itfac2
+TARGETS += $(BIN_DIR)/itfac3
 
 #################################################
 # There is no need to edit below this line
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -O2 -g -Wall
+CFLAGS = -g -Wall
 
 #### Fixed variable definitions
 CC = gcc
