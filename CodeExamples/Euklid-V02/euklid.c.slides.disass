@@ -6,11 +6,8 @@ int main (void) {
     int x;
     int y;
 
-    printf("x= ");
-    scanf("%d", &x);
-
-    printf("y= ");
-    scanf("%d", &y);
+    x=24;
+    y=9;
 
     while (x != y) {
         if (x < y)

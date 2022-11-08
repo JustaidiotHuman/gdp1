@@ -19,6 +19,18 @@ TARGETS += $(BIN_DIR)/euklid
 # Generate debugging symbols?
 CFLAGS = -g -Wall
 
+# Query for build system
+$(eval BSYSTEM = $(shell gcc -dumpmachine))
+$(info Building on $(BSYSTEM))
+
+# Set option for pic
+ifeq ($(BSYSTEM),i686-linux-gnu)
+    #EXTRA_FLAGS = -fno-pic -mpush-args -mno-accumulate-outgoing-args -mpreferred-stack-boundary=4
+    EXTRA_FLAGS = -fno-pic
+else
+    EXTRA_FLAGS = -fpic
+endif
+
 #### Fixed variable definitions
 CC = gcc
 RM_DIR = rm -rf
@@ -32,12 +44,12 @@ all: $(BIN_DIR) $(TARGETS)
 
 #### Fixed build rules
 $(BIN_DIR)/% : %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(EXTRA_FLAGS) $(CFLAGS) $< -o $@
 
 $(BIN_DIR):
 	$(MKDIR) $(BIN_DIR)
 
-.PHONY: clean
 clean :
 	$(RM_DIR) $(BIN_DIR)
 
+.PHONY : clean
