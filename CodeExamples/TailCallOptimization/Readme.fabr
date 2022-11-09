@@ -1,4 +1,4 @@
-Ausgangsversion: fac.c
+Ausgangsversion: ~/GdPI/CodeExamples/TailCallOptimization/fac.c
 
 Eine bekannte rekursive Version der Fakultätsfunktion.
 
@@ -19,7 +19,6 @@ Variante 1: itfac1.c
 
 Tailrekursive Variante mit Akkumulator.
 Bei Übersetzung mit -O2 wird bereits Tail-Call-Optimization (TCO) durchgeführt.
-
 
 int fac(int n){
   return itfac(n,1);
@@ -52,6 +51,7 @@ int itfac(int n, int acc){
   return acc;
 }
 
+
 #------------
 
 Variante 3: itfac3.c
@@ -68,7 +68,24 @@ int itfac(int n, int acc){
 
 Generelle Beobachtung:
 
-gcc -O2 -g liefert für alle 3 Varianten den identischen Assemblercode
+gcc -O2 
+* liefert für alle 3 Varianten den identischen Assemblercode
+  welche eine effiziente Schleife (tight loop) kodiert.
+
+$ gdb -q bin/itfac1 -ex "disassemble itfac"
+Reading symbols from bin/itfac1...fertig.
+Dump of assembler code for function itfac:
+   0x0000000000000750 <+0>:	test   %edi,%edi
+   0x0000000000000752 <+2>:	mov    %esi,%eax
+   0x0000000000000754 <+4>:	je     0x768 <itfac+24>
+   0x0000000000000756 <+6>:	nopw   %cs:0x0(%rax,%rax,1)
+   0x0000000000000760 <+16>:	imul   %edi,%eax
+   0x0000000000000763 <+19>:	sub    $0x1,%edi
+   0x0000000000000766 <+22>:	jne    0x760 <itfac+16>
+   0x0000000000000768 <+24>:	repz retq
+End of assembler dump.
+
+# Build
 
 make clean; make
 
