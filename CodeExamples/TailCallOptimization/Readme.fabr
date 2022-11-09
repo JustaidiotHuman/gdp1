@@ -1,0 +1,96 @@
+Ausgangsversion: fac.c
+
+Eine bekannte rekursive Version der Fakultätsfunktion.
+
+int fac(int n){
+   int res;
+
+  if (n == 0){
+    res = 1;
+  } else {
+    res = n * fac(n-1);
+  }
+  return res;
+}
+
+#------------
+
+Variante 1: itfac1.c
+
+Tailrekursive Variante mit Akkumulator.
+Bei Übersetzung mit -O2 wird bereits Tail-Call-Optimization (TCO) durchgeführt.
+
+
+int fac(int n){
+  return itfac(n,1);
+}
+
+int itfac(int n, int acc){
+  int res;
+
+  if (n == 0) {
+      res = acc;
+    } else {
+      res = itfac(n-1, n*acc); // tail-recursive call
+    }
+
+  return res;
+}
+
+#------------
+
+Variante 2: itfac2.c
+
+Tailrekursive Variante 2 mit Akkumulator.
+Optimierung der Verzweigungsbedingung erlaubt reduktion auf einen Zweig.
+Bei Übersetzung mit -O2 wird bereits Tail-Call-Optimization (TCO) durchgeführt.
+
+int itfac(int n, int acc){
+  if (n != 0) {
+      acc = itfac(n-1, n*acc); // tail-recursive call
+  }
+  return acc;
+}
+
+#------------
+
+Variante 3: itfac3.c
+
+Iterativer Code
+
+int itfac(int n, int acc){
+  while (n != 0){
+    acc = n*acc;
+    n = n-1;
+  }
+  return acc;
+}
+
+Generelle Beobachtung:
+
+gcc -O2 -g liefert für alle 3 Varianten den identischen Assemblercode
+
+make clean; make
+
+gcc -O2 -g -Wall itfac1.c -o bin/itfac1
+gdb -q bin/itfac1 -ex "disassemble itfac"
+
+gcc -O2 -g -Wall itfac2.c -o bin/itfac2
+gdb -q bin/itfac2 -ex "disassemble itfac"
+
+gcc -O2 -g -Wall itfac3.c -o bin/itfac3
+gdb -q bin/itfac3 -ex "disassemble itfac"
+
+===>
+
+Es ist adäquat, tailrekursive Funktionen als iterativ zu bezeichnen.
+
+Die Technik der Tail Call Optimization wurde bereits in den 70er Jahren
+im Kontext von Funktionalen Sprachen (Lisp, Scheme) eingesetzt.
+In den 80er Jahren wurden diese Technik auch für konventionelle Sprachen
+wie C, C++ und Java übernommen.
+
+Siehe https://en.wikipedia.org/wiki/Tail_call
+
+
+
