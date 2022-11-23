@@ -1,0 +1,1 @@
+ln -s ~/git_public_GdP1/Debugger-LLDB/.lldbinit 
