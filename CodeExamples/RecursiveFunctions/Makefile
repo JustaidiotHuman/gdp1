@@ -29,7 +29,7 @@ CFLAGS = -g -Wall
 LDFLAGS =
 
 # default for -mpreferred-stack-boundary=4 on 32/64bit machines
-MACHINE := $(shell uname)
+MACHINE := $(shell uname -m)
 $(info $$MACHINE is $(MACHINE))
 ifeq ($(MACHINE), i686)
   EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
