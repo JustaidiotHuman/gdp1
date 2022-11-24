@@ -1,9 +1,7 @@
-# For debugging the debugger script
-# command script import ~/git_public_GdP1/Debugger-LLDB/FABR/lldb_stackutils.py
 
 make clean; make
 
-$ lldb bin/factorial
+lldb bin/factorial
 
 (lldb) list factorial
 
@@ -118,9 +116,14 @@ Process 4230 stopped
    9   			return 1;
    10  		} else {
    11  			return n * factorial(n-1);
-(lldb)
+
+(lldb) cont
 Process 4230 resuming
 factorial(4) = 24
 Process 4230 exited with status = 0 (0x00000000)
-(lldb)
+
+(lldb) exit   (or Ctrl-d)
+
+
+
 
