@@ -1,0 +1,21 @@
+# See article
+# https://stackoverflow.com/questions/15752188/arm-link-register-and-frame-pointer
+
+ARM processor do function calls very different from Intel/AMD CPUs.
+
+See also: ARM calling convention.                : https://stackoverflow.com/questions/261419/arm-to-c-calling-convention-registers-to-save
+          MSDN ARM stack article                 : http://msdn.microsoft.com/en-us/library/aa448593.aspx
+          University of Cambridge APCS overview  : http://www.cl.cam.ac.uk/~fms27/teaching/2001-02/arm-project/02-sort/apcs.txt
+          ARM stack trace blog                   : http://minghuasweblog.wordpress.com/2013/04/05/arm-cc-software-stack-back-trace/
+          Apple ABI link                         : https://developer.apple.com/library/ios/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html
+
+ARM ABI:
+
+The basic frame layout is,
+
+    fp[-0] saved pc, where we stored this frame.
+    fp[-1] saved lr, the return address for this function.
+    fp[-2] previous sp, before this function eats stack.
+    fp[-3] previous fp, the last stack frame.
+    many optional registers...
+
