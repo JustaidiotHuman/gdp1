@@ -28,10 +28,17 @@ CFLAGS = -g -Wall
 #LDFLAGS = -lrt
 LDFLAGS =
 
-#EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
 # default for -mpreferred-stack-boundary=4 on 32/64bit machines
-EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4
-#EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2
+MACHINE := $(shell uname)
+$(info $$MACHINE is $(MACHINE))
+ifeq ($(MACHINE), i686)
+  EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
+  #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2
+else ifeq ($(MACHINE), armv7l)
+  EXTRA_FLAGS = 
+else ifeq ($(MACHINE), x86_64)
+  EXTRA_FLAGS = 
+endif
 
 #### Fixed variable definitions
 CC = gcc
