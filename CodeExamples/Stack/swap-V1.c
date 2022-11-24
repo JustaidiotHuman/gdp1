@@ -24,8 +24,8 @@ int main() {
     swap(i1,i2);
 
     printf("After swap\n");
-    printf("i1: %d\n",i1);
-    printf("i2: %d\n",i2);
+    printf("i1: %x\n",i1);
+    printf("i2: %x\n",i2);
 
     return 0;
 }
