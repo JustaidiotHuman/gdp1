@@ -44,7 +44,7 @@ def stack_all(debugger, arguments, result, internal_dict):
   # Search for the frame of function main
   cur_frame = frame
   while not (cur_frame.name == 'main'):
-      cur_frame = frame.parent
+      cur_frame = cur_frame.parent
 
   # Frame pointers are always aligned to multiples of the address architecture
   #end_addr = cur_frame.fp + (cur_frame.fp % 8)
@@ -98,6 +98,7 @@ def stack_all(debugger, arguments, result, internal_dict):
 
   else:
     # report error
+    print("Unable to read memory from stack")
     pass
 
 # TODO
