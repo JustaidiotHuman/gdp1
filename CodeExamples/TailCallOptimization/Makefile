@@ -20,7 +20,24 @@ TARGETS += $(BIN_DIR)/itfac3
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall -O2
+#CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall
+
+#LDFLAGS = -lrt
+LDFLAGS =
+
+# default for -mpreferred-stack-boundary=4 on 32/64bit machines
+MACHINE := $(shell uname -m)
+$(info $$MACHINE is $(MACHINE))
+ifeq ($(MACHINE), i686)
+  #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
+  #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2
+  EXTRA_FLAGS =
+else ifeq ($(MACHINE), armv7l)
+  EXTRA_FLAGS =
+else ifeq ($(MACHINE), x86_64)
+  EXTRA_FLAGS =
+endif
 
 #### Fixed variable definitions
 CC = gcc
@@ -35,7 +52,7 @@ all: $(BIN_DIR) $(TARGETS)
 
 #### Fixed build rules
 $(BIN_DIR)/% : %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(EXTRA_FLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 $(BIN_DIR):
 	$(MKDIR) $(BIN_DIR)

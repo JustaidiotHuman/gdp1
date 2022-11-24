@@ -68,9 +68,14 @@ int itfac(int n, int acc){
 
 Generelle Beobachtung:
 
+gcc -O0 
+* liefert für alle 3 Varianten unterschiedlichen Assemblercode:
+  - bin/itfac1 und bin/itfac2 enthalten rekursive Aufrufe
+  - bin/itfac3 enthält eine Schleife im Assemblercode
+
 gcc -O2 
-* liefert für alle 3 Varianten den identischen Assemblercode
-  welche eine effiziente Schleife (tight loop) kodiert.
+* liefert für alle 3 Varianten den identischen Assemblercode,
+  welcher eine effiziente Schleife (tight loop) kodiert.
 
 $ gdb -q bin/itfac1 -ex "disassemble itfac"
 Reading symbols from bin/itfac1...fertig.
@@ -85,7 +90,20 @@ Dump of assembler code for function itfac:
    0x0000000000000768 <+24>:	repz retq
 End of assembler dump.
 
-# Build
+# Build mit -O0
+
+make clean; make
+
+gcc -O0 -g -Wall itfac1.c -o bin/itfac1
+gdb -q bin/itfac1 -ex "disassemble itfac"
+
+gcc -O0 -g -Wall itfac2.c -o bin/itfac2
+gdb -q bin/itfac2 -ex "disassemble itfac"
+
+gcc -O0 -g -Wall itfac3.c -o bin/itfac3
+gdb -q bin/itfac3 -ex "disassemble itfac"
+
+# Build mit -O2
 
 make clean; make
 
