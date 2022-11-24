@@ -1,0 +1,126 @@
+# For debugging the debugger script
+# command script import ~/git_public_GdP1/Debugger-LLDB/FABR/lldb_stackutils.py
+
+make clean; make
+
+$ lldb bin/factorial
+
+(lldb) list factorial
+
+(lldb) breakpoint set  -f "factorial.c" --line 8
+
+(lldb) target stop-hook add --one-liner "frame variable n"
+
+(lldb) target stop-hook add --one-liner "stack_all"
+
+(lldb) run 4
+
+Process 4160 launched: '/home/regensbu/git_public_GdP1/CodeExamples/RecursiveFunctions/bin/factorial' (x86_64)
+
+- Hook 1 (frame variable n)
+(int) n = 4
+
+
+7fffffffdd18: 80 26 a2 f7 04 00 00 00
+7fffffffdd20: 50 dd ff ff ff 7f 00 00  <-- fp of frame #0
+7fffffffdd28: 58 47 55 55 55 55 00 00
+7fffffffdd30: 38 de ff ff ff 7f 00 00
+7fffffffdd38: c0 45 55 55 02 00 00 00
+7fffffffdd40: 30 de ff ff ff 7f 00 00
+7fffffffdd48: 00 00 00 00 04 00 00 00
+7fffffffdd50: 80 47 55 55 55 55 00 00  <-- fp of frame #1: main
+
+- Hook 2 (stack_all)
+Process 4160 stopped
+* thread #1, name = 'factorial', stop reason = breakpoint 1.1
+    frame #0: 0x00005555555546d5 factorial` factorial(n=4)  + 11 at factorial.c:8
+   5   	#define ERROR 1
+   6
+   7   	int factorial(int n) {
+-> 8   		if (n <= 1) {
+   9   			return 1;
+   10  		} else {
+   11  			return n * factorial(n-1);
+(lldb)
+
+#---- 
+
+(lldb) cont
+Process 4160 resuming
+
+- Hook 1 (frame variable n)
+(int) n = 3
+
+
+7fffffffdcf8: c0 45 55 55 03 00 00 00
+7fffffffdd00: 20 dd ff ff ff 7f 00 00  <-- fp of frame #0
+7fffffffdd08: ef 46 55 55 55 55 00 00
+7fffffffdd10: 00 00 00 00 00 00 00 00
+7fffffffdd18: 80 26 a2 f7 04 00 00 00
+7fffffffdd20: 50 dd ff ff ff 7f 00 00  <-- fp of frame #1
+7fffffffdd28: 58 47 55 55 55 55 00 00
+7fffffffdd30: 38 de ff ff ff 7f 00 00
+7fffffffdd38: c0 45 55 55 02 00 00 00
+7fffffffdd40: 30 de ff ff ff 7f 00 00
+7fffffffdd48: 00 00 00 00 04 00 00 00
+7fffffffdd50: 80 47 55 55 55 55 00 00  <-- fp of frame #2: main
+
+- Hook 2 (stack_all)
+Process 4160 stopped
+* thread #1, name = 'factorial', stop reason = breakpoint 1.1
+    frame #0: 0x00005555555546d5 factorial` factorial(n=3)  + 11 at factorial.c:8
+   5   	#define ERROR 1
+   6
+   7   	int factorial(int n) {
+-> 8   		if (n <= 1) {
+   9   			return 1;
+   10  		} else {
+   11  			return n * factorial(n-1);
+
+#---
+(lldb) cont
+...
+#---
+
+- Hook 1 (frame variable n)
+(int) n = 1
+
+
+7fffffffdcb8: 00 00 00 00 01 00 00 00
+7fffffffdcc0: e0 dc ff ff ff 7f 00 00  <-- fp of frame #0
+7fffffffdcc8: ef 46 55 55 55 55 00 00
+7fffffffdcd0: 00 00 05 00 00 00 00 00
+7fffffffdcd8: ff ff ff ff 02 00 00 00
+7fffffffdce0: 00 dd ff ff ff 7f 00 00  <-- fp of frame #1
+7fffffffdce8: ef 46 55 55 55 55 00 00
+7fffffffdcf0: 50 dd ff ff ff 7f 00 00
+7fffffffdcf8: c0 45 55 55 03 00 00 00
+7fffffffdd00: 20 dd ff ff ff 7f 00 00  <-- fp of frame #2
+7fffffffdd08: ef 46 55 55 55 55 00 00
+7fffffffdd10: 00 00 00 00 00 00 00 00
+7fffffffdd18: 80 26 a2 f7 04 00 00 00
+7fffffffdd20: 50 dd ff ff ff 7f 00 00  <-- fp of frame #3
+7fffffffdd28: 58 47 55 55 55 55 00 00
+7fffffffdd30: 38 de ff ff ff 7f 00 00
+7fffffffdd38: c0 45 55 55 02 00 00 00
+7fffffffdd40: 30 de ff ff ff 7f 00 00
+7fffffffdd48: 00 00 00 00 04 00 00 00
+7fffffffdd50: 80 47 55 55 55 55 00 00  <-- fp of frame #4: main
+
+- Hook 2 (stack_all)
+Process 4230 stopped
+* thread #1, name = 'factorial', stop reason = breakpoint 1.1
+    frame #0: 0x00005555555546d5 factorial` factorial(n=1)  + 11 at factorial.c:8
+   5   	#define ERROR 1
+   6
+   7   	int factorial(int n) {
+-> 8   		if (n <= 1) {
+   9   			return 1;
+   10  		} else {
+   11  			return n * factorial(n-1);
+(lldb)
+Process 4230 resuming
+factorial(4) = 24
+Process 4230 exited with status = 0 (0x00000000)
+(lldb)
+
