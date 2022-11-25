@@ -3,15 +3,22 @@ make clean; make
 
 lldb bin/factorial
 
-(lldb) list factorial
+# Inside lldb session do:
 
-(lldb) breakpoint set  -f "factorial.c" --line 8
+list factorial
 
-(lldb) target stop-hook add --one-liner "frame variable n"
+breakpoint set  -f "factorial.c" --line 8
 
-(lldb) target stop-hook add --one-liner "stack_all"
+target stop-hook add --one-liner "frame variable n"
 
-(lldb) run 4
+target stop-hook add --one-liner "stack_all"
+
+settings set stop-line-count-before 0
+settings set stop-line-count-after 0
+
+run 4
+
+#-----
 
 Process 4160 launched: '/home/regensbu/git_public_GdP1/CodeExamples/RecursiveFunctions/bin/factorial' (x86_64)
 
@@ -32,16 +39,6 @@ Process 4160 launched: '/home/regensbu/git_public_GdP1/CodeExamples/RecursiveFun
 Process 4160 stopped
 * thread #1, name = 'factorial', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546d5 factorial` factorial(n=4)  + 11 at factorial.c:8
-   5   	#define ERROR 1
-   6
-   7   	int factorial(int n) {
--> 8   		if (n <= 1) {
-   9   			return 1;
-   10  		} else {
-   11  			return n * factorial(n-1);
-(lldb)
-
-#---- 
 
 (lldb) cont
 Process 4160 resuming
@@ -67,17 +64,9 @@ Process 4160 resuming
 Process 4160 stopped
 * thread #1, name = 'factorial', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546d5 factorial` factorial(n=3)  + 11 at factorial.c:8
-   5   	#define ERROR 1
-   6
-   7   	int factorial(int n) {
--> 8   		if (n <= 1) {
-   9   			return 1;
-   10  		} else {
-   11  			return n * factorial(n-1);
 
 #---
 (lldb) cont
-...
 #---
 
 - Hook 1 (frame variable n)
@@ -109,21 +98,12 @@ Process 4160 stopped
 Process 4230 stopped
 * thread #1, name = 'factorial', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546d5 factorial` factorial(n=1)  + 11 at factorial.c:8
-   5   	#define ERROR 1
-   6
-   7   	int factorial(int n) {
--> 8   		if (n <= 1) {
-   9   			return 1;
-   10  		} else {
-   11  			return n * factorial(n-1);
 
 (lldb) cont
+
 Process 4230 resuming
 factorial(4) = 24
 Process 4230 exited with status = 0 (0x00000000)
 
 (lldb) exit   (or Ctrl-d)
-
-
-
 
