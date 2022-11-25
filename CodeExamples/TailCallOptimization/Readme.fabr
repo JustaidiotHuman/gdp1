@@ -41,7 +41,7 @@ int itfac(int n, int acc){
 Variante 2: itfac2.c
 
 Tailrekursive Variante 2 mit Akkumulator.
-Optimierung der Verzweigungsbedingung erlaubt reduktion auf einen Zweig.
+Optimierung der Verzweigungsbedingung erlaubt Reduktion auf einen Zweig.
 Bei Übersetzung mit -O2 wird bereits Tail-Call-Optimization (TCO) durchgeführt.
 
 int itfac(int n, int acc){
@@ -56,7 +56,7 @@ int itfac(int n, int acc){
 
 Variante 3: itfac3.c
 
-Iterativer Code
+Iterativer Code in expliziter while-Schleife.
 
 int itfac(int n, int acc){
   while (n != 0){
@@ -126,6 +126,3 @@ In den 80er Jahren wurden diese Technik auch für konventionelle Sprachen
 wie C, C++ und Java übernommen.
 
 Siehe https://en.wikipedia.org/wiki/Tail_call
-
-
-
