@@ -1,20 +1,45 @@
+# In a terminal wit at least 82x32
 
 make clean; make
 
 lldb bin/factorial
 
+# ------------------------
 # Inside lldb session do:
+# ------------------------
 
 list factorial
 
-breakpoint set  -f "factorial.c" --line 8
+# set breakpoints
+
+# this sets breakpoints set via -n <fun name> after the function's prolog
+
+settings set target.skip-prologue true
+
+breakpoint list
+
+# breakpoint set  -f "factorial.c" --line 8
+# breakpoint set -n factorial
+
+b factorial
+
+# set some stop hooks
+
+target stop-hook list
 
 target stop-hook add --one-liner "frame variable n"
 
 target stop-hook add --one-liner "stack_all"
 
+target stop-hook list
+
+# remove context arround current line for display of stopped process
+
 settings set stop-line-count-before 0
+
 settings set stop-line-count-after 0
+
+# clear the screen using Ctrl-l
 
 run 4
 
@@ -40,7 +65,10 @@ Process 4160 stopped
 * thread #1, name = 'factorial', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546d5 factorial` factorial(n=4)  + 11 at factorial.c:8
 
+#---
+
 (lldb) cont
+
 Process 4160 resuming
 
 - Hook 1 (frame variable n)
@@ -64,6 +92,36 @@ Process 4160 resuming
 Process 4160 stopped
 * thread #1, name = 'factorial', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546d5 factorial` factorial(n=3)  + 11 at factorial.c:8
+
+#---
+(lldb) cont
+#---
+
+- Hook 1 (frame variable n)
+(int) n = 2
+
+
+7fffffffdd08: ff ff ff ff 02 00 00 00
+7fffffffdd10: 30 dd ff ff ff 7f 00 00  <-- fp of frame #0
+7fffffffdd18: ef 46 55 55 55 55 00 00
+7fffffffdd20: 80 dd ff ff ff 7f 00 00
+7fffffffdd28: c0 45 55 55 03 00 00 00
+7fffffffdd30: 50 dd ff ff ff 7f 00 00  <-- fp of frame #1
+7fffffffdd38: ef 46 55 55 55 55 00 00
+7fffffffdd40: 00 00 00 00 00 00 00 00
+7fffffffdd48: 80 26 a2 f7 04 00 00 00
+7fffffffdd50: 80 dd ff ff ff 7f 00 00  <-- fp of frame #2
+7fffffffdd58: 58 47 55 55 55 55 00 00
+7fffffffdd60: 68 de ff ff ff 7f 00 00
+7fffffffdd68: c0 45 55 55 02 00 00 00
+7fffffffdd70: 60 de ff ff ff 7f 00 00
+7fffffffdd78: 00 00 00 00 04 00 00 00
+7fffffffdd80: 80 47 55 55 55 55 00 00  <-- fp of frame #3: main
+
+- Hook 2 (stack_all)
+Process 3301 stopped
+* thread #1, name = 'factorial', stop reason = breakpoint 1.1
+    frame #0: 0x00005555555546d5 factorial` factorial(n=2)  + 11 at factorial.c:8
 
 #---
 (lldb) cont
