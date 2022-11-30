@@ -37,9 +37,10 @@ Ctrl-l löscht die Anzeige (clear screen!)
 
 #Hints:
 #set disassembly-flavor intel
+#set disassembly-flavor att
 #set print max-symbolic-offset 1
 
-# Show disassembled code in AT&T flavour
+# Show disassembled code
 
 (gdb) disass /m main
 Dump of assembler code for function main:

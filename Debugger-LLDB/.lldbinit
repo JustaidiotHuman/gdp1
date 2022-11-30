@@ -4,4 +4,15 @@ command script import ~/git_public_GdP1/Debugger-LLDB/SelanderDerek/lldb_command
 # Import FABR scripts for stack dumps
 command script import ~/git_public_GdP1/Debugger-LLDB/FABR/lldb_stackutils.py
 
+# Some default settings
+
+# This allows for setting breakpoints via option
+#   -n <fun name>
+# after the function's prolog.
+# This results in a behavior similar to gdb.
+#
+# On the other hand, if you set 'target.skip-prologue true' then
+# the breakpoint will be on the very first instruction of the prolog
+
+settings set target.skip-prologue true
 

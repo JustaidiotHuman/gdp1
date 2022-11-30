@@ -10,16 +10,24 @@ lldb bin/factorial
 
 list factorial
 
-# set breakpoints
-
-# this sets breakpoints set via -n <fun name> after the function's prolog
-
-settings set target.skip-prologue true
+# Set breakpoints
+# We assume the global settings
+#   settings set target.skip-prologue true
+# which is realized via .lldbinit somehow
+#
+# This allows for setting breakpoints via option
+#   -n <fun name>
+# after the function's prolog.
+# This results in a behavior similar to gdb.
+#
+# On the other hand, if you set 'target.skip-prologue true' then
+# the breakpoint will be on the very first instruction of the prolog
 
 breakpoint list
 
 # breakpoint set  -f "factorial.c" --line 8
-# breakpoint set -n factorial
+
+breakpoint set -n factorial
 
 b factorial
 
