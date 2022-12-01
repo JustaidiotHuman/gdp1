@@ -4,7 +4,11 @@ command script import ~/git_public_GdP1/Debugger-LLDB/SelanderDerek/lldb_command
 # Import FABR scripts for stack dumps
 command script import ~/git_public_GdP1/Debugger-LLDB/FABR/lldb_stackutils.py
 
-# Some default settings
+# FABR
+# Some default settings for our environment
+#
+# We revert some of the settings established by the selander scripts.
+# See file SelanderDerek/lldb_commands/settings.txt
 
 # This allows for setting breakpoints via option
 #   -n <fun name>
@@ -15,4 +19,13 @@ command script import ~/git_public_GdP1/Debugger-LLDB/FABR/lldb_stackutils.py
 # the breakpoint will be on the very first instruction of the prolog
 
 settings set target.skip-prologue true
+
+#
+# Set target.x86-disassembly-flavor (enum)
+# Available completions:
+#	intel
+#	default
+#	att    (== default)
+
+settings set target.x86-disassembly-flavor att 
 
