@@ -1,0 +1,13 @@
+# Window 1: the window showing the worm
+# Start the worm program.
+# It should stop at some getc() or getchar() statement.
+
+regensbu@tuxedo1:~/GdPIP/Code/Worm020
+$ bin/worm
+
+
+# Window 2: the debugger window
+
+regensbu@tuxedo1:~/GdPIP/Code/Worm020
+$ lldb -p `pidof worm` -s lldb_breakpoint_script_init
+

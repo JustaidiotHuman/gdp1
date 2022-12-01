@@ -1,0 +1,14 @@
+# lldb-6.0 -p `pidof worm` -s lldb_breakpoint_script_init
+# 
+# Commands for instrumentation
+
+command script import lldb_breakpoint_script_worm020.py
+
+breakpoint set -n readUserInput
+breakpoint command add --python-function lldb_breakpoint_script_worm020.breakpoint_callback --script-type python
+
+# Release process from stop due to attach command.
+# Note: you probably have to press some key in the worm window as well.
+
+cont
+
