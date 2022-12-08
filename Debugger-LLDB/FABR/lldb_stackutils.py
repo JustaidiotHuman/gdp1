@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #!/usr/bin/env python
 
 from __future__ import print_function
@@ -27,9 +28,9 @@ def stack_all(debugger, arguments, result, internal_dict):
   # This compensates for the red-zone of leaf functions used in x64 ABI
   min_addr = frame.fp
   for v in variables:
-      #print("at address %x is variable: %s" % (int(v.GetAddress()), v.name) )
-      if int(v.GetAddress()) < min_addr:
-            min_addr = int(v.GetAddress())
+      #print("at address %x is variable: %s" % (int(v.GetLoadAddress()), v.name) )
+      if int(v.GetLoadAddress()) < min_addr:
+            min_addr = int(v.GetLoadAddress())
 
   # Adjust the start address to a multiple of arch_size
   start_addr = min_addr - (min_addr % arch_size)
@@ -64,7 +65,10 @@ def stack_all(debugger, arguments, result, internal_dict):
           # See future import at the top of this file.
           print("%x:" % (start_addr+wi), end='')
           for b in stack_blob[wi:wi+arch_size]:
-            print(" %s" % binascii.hexlify(b), end='')
+            if isinstance(b, int):
+            	print(" %02x" % b, end='')
+            else:
+                print(" %s" % binascii.hexlify(b), end='')
 
           if start_addr+wi == cur_fp:
               print("  <-- fp of frame #%d" % cur_idx, end='')
