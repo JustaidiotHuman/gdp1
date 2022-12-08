@@ -6,6 +6,7 @@
 
 // Offenes Array
 // Angabe von zweiter Dimension MAX_S ist Pflicht!
+
 void drucke2(int feld[][MAX_S], int zAnz, int sAnz) {
   int i,j;
 
@@ -27,9 +28,13 @@ int main(void) {
     {41,42,43,44,45},
   };
 
-  //drucke2(               a       ,MAX_Z, MAX_S); // Normale Verwendung
-  //drucke2(              &a[1][1] ,2    , 3);     // Das erzeugt Warning, geht aber
-  drucke2((int(*)[MAX_S]) &a[1][1] ,2    , 3);     // Mit Cast geht es ohne Warning
+  //drucke2(         a       , MAX_Z, MAX_S); // Normale Verwendung
+
+  //drucke2(        &a[1][1] , 2    , 3);     // Das erzeugt Warning, geht aber
+
+    drucke2((void*) &a[1][1] , 2    , 3);     // Mit Cast (void*) geht es ohne Warning
+
+  //drucke2((int(*)[MAX_S]) &a[1][1], 2, 3);  // Dieser Cast passt exakt zu drucke2
 
   return EXIT_SUCCESS;
 }

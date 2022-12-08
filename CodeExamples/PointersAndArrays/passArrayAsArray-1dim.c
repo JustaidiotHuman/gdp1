@@ -10,6 +10,7 @@
 // Parameters:
 // (REF) anArray: the array to be processed as open array
 // (VAL)   asize: the size of the array
+
 void negateElements(int anArray[], int asize) {
   int i;
 
@@ -34,8 +35,8 @@ int main() {
 
   //negateElements(&theArray[4],ARRAY_SIZE-4); // Pass array with offset
 
-  //negateElements(&theArray[4],3);          // Pass array with offset
-  // Only process 3 elements
+  //negateElements(&theArray[4],3);            // Pass array with offset
+                                               // Process 3 elements, only
 
   for (i = 0; i< ARRAY_SIZE; i++) {
     printf("theArray[%d] = %d\n",i,theArray[i]);
