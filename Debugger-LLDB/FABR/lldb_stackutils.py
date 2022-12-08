@@ -26,7 +26,7 @@ def stack_all(debugger, arguments, result, internal_dict):
 
   # Compute minimal address of all variables
   # This compensates for the red-zone of leaf functions used in x64 ABI
-  min_addr = frame.fp
+  min_addr = min(frame.fp, frame.sp)
   for v in variables:
       #print("at address %x is variable: %s" % (int(v.GetLoadAddress()), v.name) )
       if int(v.GetLoadAddress()) < min_addr:
