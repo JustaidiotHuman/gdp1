@@ -1,0 +1,16 @@
+# Step 1: link the init file for lldb
+
+cd $HOME
+ln -s ~/git_public_GdP1/Debugger-LLDB/.lldbinit
+
+# Step 2: create a link to the debugger ressource, that
+#         is independant of the name of your git root directory.
+
+cd $HOME
+ln -s ~/git_public_GdP1/Debugger-LLDB .
+
+# Step 3:
+#
+# Whenever you load any lldb ressources (scripts etc.) use
+# the path ~/Debugger-LLDB
+#

@@ -1,6 +1,17 @@
+# Prerequisite:
+# You created a symbolic link
+#    ~/Debugger-LLDB
+# to directory
+#   ~/git_public_GdP1/Debugger-LLDB
+#
+# See file
+#   ~/git_public_GdP1/Debugger-LLDB/Setup-LLDB-environment.howto.txt
+#
+
 # Window 1: the window showing the worm
 # Start the worm program.
-# It should stop at some getc() or getchar() statement.
+# It should stop at some getc() or getchar() statement or
+# stop somewhere else, e.g. due to single step execution 's' of readUserInput()
 
 regensbu@tuxedo1:~/GdPIP/Code/Worm020
 $ bin/worm
@@ -9,5 +20,5 @@ $ bin/worm
 # Window 2: the debugger window
 
 regensbu@tuxedo1:~/GdPIP/Code/Worm020
-$ lldb -p `pidof worm` -s lldb_breakpoint_script_init
+$ lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm020/lldb_breakpoint_script_init
 
