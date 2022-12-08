@@ -36,6 +36,8 @@ ifeq ($(MACHINE), i686)
   #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2
 else ifeq ($(MACHINE), armv7l)
   EXTRA_FLAGS = 
+else ifeq ($(MACHINE), arm64)
+  EXTRA_FLAGS = 
 else ifeq ($(MACHINE), x86_64)
   EXTRA_FLAGS = 
 endif
