@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 #!/usr/bin/env python
 
 from __future__ import print_function
@@ -35,10 +34,29 @@ def stack_all(debugger, arguments, result, internal_dict):
   # Adjust the start address to a multiple of arch_size
   start_addr = min_addr - (min_addr % arch_size)
 
+  # Set flag for broken chain of frames to False
+  # For arm achitectures the chain of frames is broken
+  # near the assembly command 'ret'.
+  # In such a case lldb.frame == lldb.frame.parent.
+  # Examples for arm64:
+  #    22   0x100003e9c <+88>:   add   sp,  sp
+  #   *23   0x100003ea0 <+92>:   ret
+  chain_broken = False
+
   # Search for the frame of function main
   cur_frame = frame
+  #while not (cur_frame.name == 'main') and not (cur_frame == cur_frame.parent):
   while not (cur_frame.name == 'main'):
-      cur_frame = cur_frame.parent
+      if (cur_frame == cur_frame.parent):
+        print("")
+        print("Attention: chain of frame pointers is broken near assembly")
+        print("           command 'ret' on arm architectures.")
+        print("           Therefore, we dump the current and the parent frame, only.")
+        print("")
+        chain_broken = True
+        break
+      else:
+      	cur_frame = cur_frame.parent
 
   # Frame pointers are always aligned to multiples of arch_size
   end_addr = cur_frame.fp
@@ -76,7 +94,8 @@ def stack_all(debugger, arguments, result, internal_dict):
               cur_idx += 1
               # Assume success
               if start_addr+wi == end_addr:
-                  print(": main", end='')
+                  if not chain_broken:
+                      print(": main", end='')
 
           print("")
 
