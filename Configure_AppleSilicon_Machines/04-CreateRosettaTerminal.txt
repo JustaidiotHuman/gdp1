@@ -1,0 +1,54 @@
+#----------------------------------------------------------------------------------
+# Create a copy of some terminal application and enable option 'open with rosetta'
+#----------------------------------------------------------------------------------
+
+# The important point is to install some 3rd party app since the mac terminal
+# is no longer meant to be run via rosetta.
+
+# We install iTerm
+#
+# Open the safari browser and google for 'iTerm2'
+#
+# Surf to https://iterm2.com
+#
+# Select download
+#
+#  Choose version iTerm2 3.4.18 (OS 10-14+)
+#
+
+# 1) Run and move app to the Applications folder
+#
+# In the folder Downloads click on the downloaded app iTerm
+#
+# Confirm 'Open the app'
+#
+# Confirm Question 'move to to Applications folder?'
+#
+
+# 2) Copy/Rename the app in the folder /Applications
+
+# As normal user
+
+cd /Applications
+
+cp -r iTerm.app x64Term.app
+
+# 3) Change option 'Open with Rosetta'
+#
+# - Open the Finder and go to Applications (Programme)
+# - Locate the new clone 'x64Term.app'
+# - Right Click (two fingers) on the App
+#  * Select 'get information'
+#  * Check option 'open with Rosetta'
+# Close info window via ESC
+
+# Now open the cloned app x64Term and test the following command
+
+uname -m
+
+#> expected output
+x86_64
+
+# You are done
+
+

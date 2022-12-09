@@ -1,0 +1,37 @@
+#
+# Make bash your system shell instead of zsh
+#
+
+chsh -s /bin/bash
+
+# Migrate settings from zsh profile to bash profile
+
+# check .zprofile
+cat .zprofile
+
+#>
+# Set PATH, MANPATH, etc., for Homebrew.
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# does this work for bash as well?
+# check
+/opt/homebrew/bin/brew shellenv
+
+#>
+export HOMEBREW_PREFIX="/opt/homebrew";
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
+export HOMEBREW_REPOSITORY="/opt/homebrew";
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
+export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
+export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
+
+# check
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# OK, we simply copy .zprofile to .profile
+
+cp .zprofile .profile
+
+#
+# TODO: add more stuff to .profile and .bashrc
+#

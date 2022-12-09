@@ -1,0 +1,15 @@
+# Install the Xcode command line tools
+# See https://mac.install.guide/commandlinetools/4.html
+
+#In a terminal (does not matter which one) type
+
+xcode-select --install
+
+# Verify that you've successfully installed Xcode Command Line Tools.
+
+xcode-select -p
+
+# Check that you can run git:
+
+git --version
+

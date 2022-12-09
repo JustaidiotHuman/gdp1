@@ -1,0 +1,24 @@
+# https://stackoverflow.com/questions/64882584/how-to-run-the-homebrew-installer-under-rosetta-2-on-m1-macbook
+#
+
+# -------------------
+# 1 Install Rosetta
+# -------------------
+
+# Run in a shell
+
+softwareupdate --install-rosetta
+
+#>
+I have read and agree to the terms of the software license agreement. A list of
+Apple SLAs may be found here: http://www.apple.com/legal/sla/
+
+Type A and press return to agree: A
+
+2022-12-07 09:37:36.889 softwareupdate[598:6012] Package Authoring Error:
+012-93827: Package reference com.apple.pkg.RosettaUpdateAuto is missing
+installKBytes attribute
+
+Install of Rosetta 2 finished successfully
+
+
