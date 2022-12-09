@@ -13,12 +13,14 @@
 # It should stop at some getc() or getchar() statement or
 # stop somewhere else, e.g. due to single step execution 's' of readUserInput()
 
-regensbu@tuxedo1:~/GdPIP/Code/Worm020
 $ bin/worm
 
 
 # Window 2: the debugger window
 
-regensbu@tuxedo1:~/GdPIP/Code/Worm020
 $ lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm020/lldb_breakpoint_script_init
+
+# A window pops up: Developer Tools Access
+#
+# Enter your password to allow the debugger to access the worm binary
 

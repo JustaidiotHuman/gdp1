@@ -2,4 +2,8 @@
 
 brew install pidof
 
+# Install utility 'tree'
+
+brew install tree
+
 
