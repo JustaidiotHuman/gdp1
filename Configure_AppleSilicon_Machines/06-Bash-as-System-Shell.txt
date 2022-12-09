@@ -2,36 +2,39 @@
 # Make bash your system shell instead of zsh
 #
 
+# Change the system shell
+
 chsh -s /bin/bash
 
-# Migrate settings from zsh profile to bash profile
+# Configure profiles and aliases
+# The settings for brew are already incorporated.
+# It just was:
+# 	eval "$(/opt/homebrew/bin/brew shellenv)"
+# which expands to
+# #>
+# export HOMEBREW_PREFIX="/opt/homebrew";
+# export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
+# export HOMEBREW_REPOSITORY="/opt/homebrew";
+# export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
+# export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
+# export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
 
-# check .zprofile
-cat .zprofile
+# Link profiles and aliases
 
-#>
-# Set PATH, MANPATH, etc., for Homebrew.
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Adapt the name of the root directory of the checked out public git repo for GdP1
+# (here git_public_GdP1)
 
-# does this work for bash as well?
-# check
-/opt/homebrew/bin/brew shellenv
+cd $HOME
 
-#>
-export HOMEBREW_PREFIX="/opt/homebrew";
-export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
-export HOMEBREW_REPOSITORY="/opt/homebrew";
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
-export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
-export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
+ln -s git_public_GdP1/Configure_AppleSilicon_Machines/Bash/dot.bashrc .bashrc
 
-# check
-eval "$(/opt/homebrew/bin/brew shellenv)"
+ln -s git_public_GdP1/Configure_AppleSilicon_Machines/Bash/dot.profile .profile
 
-# OK, we simply copy .zprofile to .profile
-
-cp .zprofile .profile
+ln -s git_public_GdP1/Configure_AppleSilicon_Machines/Bash/dot.bash_aliases .bash_aliases
 
 #
-# TODO: add more stuff to .profile and .bashrc
+# Important:
+# Logout and then Login again
 #
+# Your login shell and your profiles are only activated during login!
+

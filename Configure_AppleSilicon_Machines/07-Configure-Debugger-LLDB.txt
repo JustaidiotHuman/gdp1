@@ -1,0 +1,6 @@
+#
+# Configure the LLDB debugger for our purposes
+#
+
+# Procede according to the documentation in file
+#    ~/git_public_GdP1/Debugger-LLDB/Setup-LLDB-environment.howto.txt

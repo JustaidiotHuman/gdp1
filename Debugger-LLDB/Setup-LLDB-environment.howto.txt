@@ -1,16 +1,28 @@
+# Adapt the name of the root directory of the checked out public git repo for GdP1
+# (here git_public_GdP1)
+
 # Step 1: link the init file for lldb
 
 cd $HOME
-ln -s ~/git_public_GdP1/Debugger-LLDB/.lldbinit
+ln -s git_public_GdP1/Debugger-LLDB/.lldbinit
 
 # Step 2: create a link to the debugger ressource, that
 #         is independant of the name of your git root directory.
+#
+# Rational:
+# You will use the path to the debugger extensions in many a debug session.
+# Most of these will belong to projects that are not related to the
+# repository git_public_GdP1.
 
 cd $HOME
-ln -s ~/git_public_GdP1/Debugger-LLDB .
+ln -s git_public_GdP1/Debugger-LLDB .
 
-# Step 3:
-#
+# ---------------------------------------------------------
 # Whenever you load any lldb ressources (scripts etc.) use
-# the path ~/Debugger-LLDB
+# the path prefix ~/Debugger-LLDB
 #
+
+# Example
+
+lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm020/lldb_breakpoint_script_init
+

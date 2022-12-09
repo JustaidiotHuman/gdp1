@@ -5,7 +5,7 @@
 # The important point is to install some 3rd party app since the mac terminal
 # is no longer meant to be run via rosetta.
 
-# We install iTerm
+# We install iTerm2
 #
 # Open the safari browser and google for 'iTerm2'
 #
