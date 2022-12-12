@@ -18,7 +18,7 @@ $ bin/worm
 
 # Window 2: the debugger window
 
-$ lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm050/lldb_breakpoint_script_init
+$ lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm070/lldb_breakpoint_script_init
 
 # A window pops up: Developer Tools Access
 #
