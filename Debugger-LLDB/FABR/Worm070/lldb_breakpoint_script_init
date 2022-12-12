@@ -1,6 +1,6 @@
 # Commands for instrumentation
 
-command script import ~/Debugger-LLDB/FABR/Worm020/lldb_breakpoint_script_worm020.py
+command script import ~/Debugger-LLDB/FABR/Worm070/lldb_breakpoint_script_worm070.py
 
 breakpoint set -n readUserInput
 
@@ -11,7 +11,7 @@ breakpoint set -n readUserInput
 # If you like to attach the command to some other breakpoint you need to
 # provide the breakpoint id as an addtional argument.
 
-breakpoint command add --python-function lldb_breakpoint_script_worm020.breakpoint_callback --script-type python
+breakpoint command add --python-function lldb_breakpoint_script_worm070.breakpoint_callback --script-type python
 
 # Release process from stop due to attach command.
 # Note: you probably have to press some key in the worm window as well.
