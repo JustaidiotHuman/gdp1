@@ -18,7 +18,7 @@ TARGETS += $(BIN_DIR)/helloReturnCapture
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall -fno-stack-protector
+CFLAGS = -g -Wall -fno-stack-protector -fomit-frame-pointer
 
 #### Fixed variable definitions
 CC = gcc
