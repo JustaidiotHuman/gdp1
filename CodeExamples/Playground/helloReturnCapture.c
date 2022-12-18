@@ -33,7 +33,6 @@ char* get_name(){
 
 int main() {
 	char *name=NULL; 
-
 	name = get_name();
 
 	if (name != NULL){
