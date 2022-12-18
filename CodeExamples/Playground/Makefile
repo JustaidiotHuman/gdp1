@@ -18,7 +18,10 @@ TARGETS += $(BIN_DIR)/helloReturnCapture
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall -fno-stack-protector -fomit-frame-pointer
+CFLAGS = -g -Wall
+
+# Add some more options for the hack
+CFLAGS += -Wno-array-bounds -Wno-deprecated-declarations -fno-stack-protector -fomit-frame-pointer
 
 #### Fixed variable definitions
 CC = gcc
