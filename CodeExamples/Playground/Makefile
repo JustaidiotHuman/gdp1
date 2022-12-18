@@ -12,6 +12,7 @@
 
 TARGETS += $(BIN_DIR)/helloArrayOutOfBound
 TARGETS += $(BIN_DIR)/helloReturnCapture
+TARGETS += $(BIN_DIR)/check_ASLR
 
 #################################################
 # There is no need to edit below this line

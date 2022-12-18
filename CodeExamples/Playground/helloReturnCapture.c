@@ -13,6 +13,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern char *gets(char *s);
+
 void pirate(){
 	printf("You have been hacked!\n");
 }
