@@ -21,8 +21,17 @@ TARGETS += $(BIN_DIR)/check_ASLR
 # Generate debugging symbols?
 CFLAGS = -g -Wall
 
-# Add some more options for the hack
-CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+MACHINE := $(shell uname -m)
+$(info $$MACHINE is $(MACHINE))
+ifeq ($(MACHINE), i686)
+  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+else ifeq ($(MACHINE), armv7l)
+  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+else ifeq ($(MACHINE), arm64)
+  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+else ifeq ($(MACHINE), x86_64)
+  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+endif
 
 #### Fixed variable definitions
 CC = gcc

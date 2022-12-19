@@ -5,8 +5,8 @@
 //     echo "Peter" | bin/helloFakedReturn
 //
 // or like this, if you are a hacker:
-//     echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
-//     cat fakeinput | bin/helloFakedReturn
+//     a) remove the PIE flag from the executable or disable ASLR in the running kernel
+//     b) cat fakeinput | bin/helloFakedReturn
 
 #include <stdio.h>
 #include <string.h>
