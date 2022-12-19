@@ -1,7 +1,7 @@
 #----------- START HERE
 # Compile witrh option -fno-stack-*
 
-lldb bin/helloReturnCapture
+lldb bin/helloFakedReturn
 
 b main
 b get_name
@@ -18,7 +18,7 @@ run
 
 
 (lldb) dd
-helloReturnCapture, main
+helloFakedReturn, main
     0    0x100003ef0 <+0>:    pushq %rbp
     1    0x100003ef1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ef4 <+4>:    subq  $0x10,  %rsp
@@ -27,7 +27,7 @@ helloReturnCapture, main
    *5    0x100003f07 <+23>:   callq 0x100003ec0  ; get_name
     6    0x100003f0c <+28>:   movq  %rax,  -0x10(%rbp)
     7    0x100003f10 <+32>:   cmpq  $0x0,  -0x10(%rbp)
-   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloReturnCapture.c:42:2
+   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloFakedReturn.c:42:2
     9    0x100003f1b <+43>:   movq  -0x10(%rbp),  %rsi
     10   0x100003f1f <+47>:   leaq  0x78(%rip),  %rdi "\nHello %s\n"
     11   0x100003f26 <+54>:   movb  $0x0,  %al
@@ -207,7 +207,7 @@ stack_blob = process.WriteMemory(addr_start,newbuf, err)
 
 (lldb) dd
 
-helloReturnCapture, get_name
+helloFakedReturn, get_name
     0    0x100003ec0 <+0>:    pushq %rbp
     1    0x100003ec1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ec4 <+4>:    subq  $0x10,  %rsp
@@ -226,7 +226,7 @@ helloReturnCapture, get_name
 # 3* ni
 
 (lldb) dd
-helloReturnCapture, get_name
+helloFakedReturn, get_name
     0    0x100003ec0 <+0>:    pushq %rbp
     1    0x100003ec1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ec4 <+4>:    subq  $0x10,  %rsp
@@ -253,7 +253,7 @@ helloReturnCapture, get_name
 
 Process 5998 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
-    frame #0: 0x0000000100003ea0 helloReturnCapture` pirate  at helloReturnCapture.c:16
+    frame #0: 0x0000000100003ea0 helloFakedReturn` pirate  at helloFakedReturn.c:16
    13  	#include <string.h>
    14  	#include <stdlib.h>
    15
@@ -263,7 +263,7 @@ Process 5998 stopped
    19
 
 (lldb) dd
-helloReturnCapture, pirate
+helloFakedReturn, pirate
 ->  0    0x100003ea0 <+0>:    pushq %rbp
     1    0x100003ea1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ea4 <+4>:    leaq  0xab(%rip),  %rdi "Your have been hacked\n"
@@ -277,7 +277,7 @@ helloReturnCapture, pirate
 # 2*ni
 
 (lldb) dd
-helloReturnCapture, pirate
+helloFakedReturn, pirate
     0    0x100003ea0 <+0>:    pushq %rbp
     1    0x100003ea1 <+1>:    movq  %rsp,  %rbp
 ->  2    0x100003ea4 <+4>:    leaq  0xab(%rip),  %rdi "Your have been hacked\n"
@@ -301,7 +301,7 @@ helloReturnCapture, pirate
 Your have been hacked
 Process 6017 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
-    frame #0: 0x0000000100003eb2 helloReturnCapture` pirate  + 18 at helloReturnCapture.c:18
+    frame #0: 0x0000000100003eb2 helloFakedReturn` pirate  + 18 at helloFakedReturn.c:18
    15
    16  	void pirate(){
    17  		printf("Your have been hacked\n");
@@ -311,7 +311,7 @@ Process 6017 stopped
    21  		char buf[15];
 
 (lldb) dd
-helloReturnCapture, pirate
+helloFakedReturn, pirate
     0    0x100003ea0 <+0>:    pushq %rbp
     1    0x100003ea1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ea4 <+4>:    leaq  0xab(%rip),  %rdi "Your have been hacked\n"
@@ -337,7 +337,7 @@ helloReturnCapture, pirate
 # We returned to the fake return address in main()
 
 (lldb) dd
-helloReturnCapture, main
+helloFakedReturn, main
     0    0x100003ef0 <+0>:    pushq %rbp
     1    0x100003ef1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ef4 <+4>:    subq  $0x10,  %rsp
@@ -346,7 +346,7 @@ helloReturnCapture, main
    *5    0x100003f07 <+23>:   callq 0x100003ec0  ; get_name
     6    0x100003f0c <+28>:   movq  %rax,  -0x10(%rbp)
     7    0x100003f10 <+32>:   cmpq  $0x0,  -0x10(%rbp)
-   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloReturnCapture.c:41:2
+   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloFakedReturn.c:41:2
     9    0x100003f1b <+43>:   movq  -0x10(%rbp),  %rsi
     10   0x100003f1f <+47>:   leaq  0x78(%rip),  %rdi "\nHello %s\n"
     11   0x100003f26 <+54>:   movb  $0x0,  %al
@@ -381,7 +381,7 @@ Attention: x64 ABI red zone of leaf frame #0:
 # ni
 
 (lldb) dd
-helloReturnCapture, main
+helloFakedReturn, main
     0    0x100003ef0 <+0>:    pushq %rbp
     1    0x100003ef1 <+1>:    movq  %rsp,  %rbp
     2    0x100003ef4 <+4>:    subq  $0x10,  %rsp
@@ -390,7 +390,7 @@ helloReturnCapture, main
    *5    0x100003f07 <+23>:   callq 0x100003ec0  ; get_name
     6    0x100003f0c <+28>:   movq  %rax,  -0x10(%rbp)
     7    0x100003f10 <+32>:   cmpq  $0x0,  -0x10(%rbp)
-   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloReturnCapture.c:42:2
+   *8    0x100003f15 <+37>:   je    0x100003f36 <+70> at helloFakedReturn.c:42:2
     9    0x100003f1b <+43>:   movq  -0x10(%rbp),  %rsi
     10   0x100003f1f <+47>:   leaq  0x78(%rip),  %rdi "\nHello %s\n"
     11   0x100003f26 <+54>:   movb  $0x0,  %al
@@ -421,7 +421,7 @@ Process 7289 exited with status = 0 (0x00000000)
 
 #------------
 
-$ lldb bin/helloReturnCapture
+$ lldb bin/helloFakedReturn
 
 (lldb) process launch -i fakeinput
 
@@ -433,7 +433,7 @@ Process 7819 exited with status = 22 (0x00000016)
 #------------
 # However, running without debugger results in a seg fault :-(
 
-cat fakeinput | bin/helloReturnCapture
+cat fakeinput | bin/helloFakedReturn
 
 #> output
 warning: this program uses gets(), which is unsafe.

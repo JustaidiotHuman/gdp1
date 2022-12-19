@@ -11,7 +11,7 @@
 # Please add all targets in ./bin here
 
 TARGETS += $(BIN_DIR)/helloArrayOutOfBound
-TARGETS += $(BIN_DIR)/helloReturnCapture
+TARGETS += $(BIN_DIR)/helloFakedReturn
 TARGETS += $(BIN_DIR)/check_ASLR
 
 #################################################
@@ -22,7 +22,7 @@ TARGETS += $(BIN_DIR)/check_ASLR
 CFLAGS = -g -Wall
 
 # Add some more options for the hack
-CFLAGS += -Wno-array-bounds -Wno-deprecated-declarations -fno-stack-protector -fomit-frame-pointer
+CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
 
 #### Fixed variable definitions
 CC = gcc
