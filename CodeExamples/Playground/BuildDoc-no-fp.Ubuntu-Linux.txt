@@ -364,12 +364,20 @@ $ lldb bin/helloFakedReturn
 
 (lldb) process launch -i fakeinput
 
-Process 4138 launched: '/home/regensbu/git_public_GdP1/CodeExamples/Playground/bin/helloFakedReturn' (x86_64)
+Process 2722 launched: '/home/regensbu/git_public_GdP1/CodeExamples/Playground/bin/helloFakedReturn' (x86_64)
+ASLR test: main is at 0x555555554806
 Please insert your surname (15 characters max): You have been hacked!
-Process 4138 exited with status = 22 (0x00000016) 
+Process 2722 stopped
+
+* thread #1, name = 'helloFakedRetur', stop reason = signal SIGSEGV: invalid address (fault address: 0xf7a03c87)
+    frame #0: 0x00000000f7a03c87
+error: memory read failed for 0xf7a03c00
+
 
 Note:
-You might as well get a seg fault error by the code executed after return from main().
+You may or may not get a seg fault error by the code executed after return from main().
+  Here: (fault address: 0xf7a03c87)
+
 However, the hack of our user code succeededr anyways.
 
 #------------
@@ -381,5 +389,9 @@ However, the hack of our user code succeededr anyways.
 
 cat fakeinput | bin/helloFakedReturn
 
+ASLR test: main is at 0x555555554806
 Please insert your surname (15 characters max): You have been hacked!
+Speicherzugriffsfehler (Speicherabzug geschrieben)
+
+
 
