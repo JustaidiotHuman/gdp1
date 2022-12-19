@@ -1,5 +1,22 @@
-#----------- START HERE
-# Compile witrh option -fno-stack-*
+# -----------------------------------------------
+# Crafting an attack by buffer overflow
+# -----------------------------------------------
+# Disable ASLR protection for the current session
+# Note: this creates a security risk for the current login session!!!
+#  echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+#
+# Enable ASLR again
+#  echo 1 | sudo tee /proc/sys/kernel/randomize_va_space
+#
+# Compile helloFakedReturn.c with additional gcc options:
+#   -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+
+# Scratch development for a binary compiled with frame pointer
+# The text reflects the environment on MacOS Ventura.
+
+# TODO FABR:
+# Adapt text below and add enhancements of adhoc python script
+# like e.g. in BuildDoc-no-fp.MacOS-Ventura.txt
 
 lldb bin/helloFakedReturn
 
@@ -431,7 +448,7 @@ Process 7819 exited with status = 22 (0x00000016)
 
 
 #------------
-# However, running without debugger results in a seg fault :-(
+# However, running without debugger results in a seg fault
 
 cat fakeinput | bin/helloFakedReturn
 
@@ -439,4 +456,7 @@ cat fakeinput | bin/helloFakedReturn
 warning: this program uses gets(), which is unsafe.
 Segmentation fault: 11
 
+#
+# TODO: remove the PIE flag from the executable.
+# Then the hack will work even for the command line.
 
