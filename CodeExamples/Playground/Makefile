@@ -24,7 +24,7 @@ CFLAGS = -g -Wall
 MACHINE := $(shell uname -m)
 $(info $$MACHINE is $(MACHINE))
 ifeq ($(MACHINE), i686)
-  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
+  CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer -momit-leaf-frame-pointer
 else ifeq ($(MACHINE), armv7l)
   CFLAGS += -Wno-array-bounds -fno-stack-protector -fomit-frame-pointer
 else ifeq ($(MACHINE), arm64)
