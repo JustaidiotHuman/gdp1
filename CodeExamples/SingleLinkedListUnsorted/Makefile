@@ -10,6 +10,7 @@
 
 # Please add all targets in ./bin here
 
+TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo
 TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_iterative_demo
 TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_recursive_demo
 TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
@@ -19,7 +20,7 @@ TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -O2
 
 #### Fixed variable definitions
 CC = gcc
@@ -51,6 +52,11 @@ $(BIN_DIR)/singleLinkedIntList_functional_recursive_demo: \
 	dumpListForDot.o \
 	singleLinkedIntList_functional_recursive.o \
 	singleLinkedIntList_functional_demo.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo: \
+	singleLinkedIntList_functional_tail_recursive.o \
+	singleLinkedIntList_functional_tail_recursive_demo.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 #### Dependencies
