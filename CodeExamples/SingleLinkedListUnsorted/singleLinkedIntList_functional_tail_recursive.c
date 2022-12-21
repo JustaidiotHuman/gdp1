@@ -1,7 +1,12 @@
 // Implementation for unsorted single linked list of integers:
 // tail-recursive version
 //
-// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux
+// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux, if
+// the optimizer flag -O2 for gcc is specified.
+//
+// Configure
+//    CFLAGS = -g -Wall -O2
+// in the Makefile
 //
 // make
 // gdb -q  -ex "disassemble list_insert_end_aux" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo 

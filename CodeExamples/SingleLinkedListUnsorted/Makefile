@@ -20,7 +20,8 @@ TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall
+#CFLAGS = -g -Wall -O2
 
 #### Fixed variable definitions
 CC = gcc
