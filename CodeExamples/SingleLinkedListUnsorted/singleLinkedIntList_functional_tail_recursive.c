@@ -11,7 +11,7 @@
 // make clean; make
 // gdb -q  -ex "disassemble list_insert_end_aux_V1" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo 
 //
-// gdb -q  -ex "disassemble list_insert_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo
+// gdb -q  -ex "disassemble list_insert_end_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo
 //
 // NOTE:
 // We use a very simple error handling method.
