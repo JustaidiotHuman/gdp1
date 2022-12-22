@@ -55,7 +55,7 @@ node_t* list_insert_end(node_t* node, int data) {
 }
 
 */
-
+
 // Dispatcher for the various versions
 
 node_t* list_insert_end(node_t* node, int data) {
@@ -114,7 +114,7 @@ node_t* list_insert_end_iter(node_t* first, int data) {
   // Return the anchor to the list
   return first;
 }
-
+
 // ----------------------------------------------------
 // Tail-recursive version: with slight optimization (*)
 // ----------------------------------------------------
