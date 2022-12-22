@@ -12,9 +12,6 @@
 
 extern node_t* list_create_node(int data);
 extern node_t* list_insert_end(node_t* anchor, int data);
-extern node_t* list_insert_end_V1(node_t* node, int data);
-extern node_t* list_insert_end_iter(node_t* anchor, int data);
-
 extern void list_dump(node_t *anchor);
 extern node_t* list_free(node_t* anchor);
 
