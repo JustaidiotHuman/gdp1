@@ -26,7 +26,7 @@
 // forward decls
 
 extern node_t* list_insert_end_V1(node_t*, int);
-extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*, node_t*);
+extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*);
 
 extern node_t* list_insert_end_V1opt(node_t*, int);
 extern node_t* list_insert_end_aux_V1opt(node_t*, int, node_t*, node_t*);
@@ -72,19 +72,19 @@ node_t* list_insert_end(node_t* node, int data) {
 // Without optimization in the wrapper
 
 node_t* list_insert_end_V1(node_t* node, int data) {
-    return list_insert_end_aux_V1(node, data, node, node);
+    return list_insert_end_aux_V1(node, data, node);
 }
 
-// Invariant inv: cur != NULL implies first != NULL && last != NULL
-node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first, node_t* last) {
-  if (first == NULL){
+// Invariant inv: cur != NULL implies first != NULL
+node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first) {
+  if (cur == NULL){
       return list_create_node(data);
   }
 
-  // By condition above and (inv): cur, first, last are all != NULL
+  // By condition above and (inv): cur and first are both != NULL
   if (cur->next != NULL){
       // tail recursive call
-      return list_insert_end_aux_V1(cur->next, data, first, cur);
+      return list_insert_end_aux_V1(cur->next, data, first);
   }
 
   // cur->next == NULL
@@ -98,13 +98,13 @@ node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first, node_t* las
 // Iterative version
 // ----------------------------------------------------
 // Compare to list_insert_end_aux_V1
-node_t* list_insert_end_iter(node_t* first, int data) {
+node_t* list_insert_end_iter(node_t* cur, int data) {
   // Is the list empty
-  if (first == NULL) {
+  if (cur == NULL) {
     return list_create_node(data);
   }
   // List is not empty: go to last node
-  node_t* cur = first;
+  node_t* first = cur;
   while (cur->next != NULL) {
     cur = cur -> next;
   }
