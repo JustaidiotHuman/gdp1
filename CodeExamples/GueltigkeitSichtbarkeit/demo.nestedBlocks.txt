@@ -1,0 +1,153 @@
+Terminal: 70x30
+
+Aufruf der Demo:
+
+gdbtui -q -x gdb.demo.nestedBlocks bin/nestedBlocks
+
+Im Debugger:
+
+#----
+
+Lebensdauer des äußeren und des inneren 'i':
+
+- Wann wird Speicherplatz für die Variablen reserviert?
+  Wann wird er wieder freigegeben?
+
+Achtung:
+Compiler kann früher als nötig Speicherplatz reservieren
+und später als möglich Speicherplatz freigeben.
+  
+Umschalten in Full-Screen: Strg-x a
+
+Dann
+
+  disassemble /m main
+
+# Ausgabe
+
+4	int main () {
+   0x0804840b <+0>:	lea    ecx,[esp+0x4]
+   0x0804840f <+4>:	and    esp,0xfffffff0
+   0x08048412 <+7>:	push   DWORD PTR [ecx-0x4]
+   0x08048415 <+10>:	push   ebp
+   0x08048416 <+11>:	mov    ebp,esp
+   0x08048418 <+13>:	push   ecx
+   0x08048419 <+14>:	sub    esp,0x14  <------- Reservierung
+
+5	  // local variables
+6	  int i,k;
+
+...
+
+21	  return EXIT_SUCCESS;
+   0x08048481 <+118>:	mov    eax,0x0
+
+22	}
+   0x08048486 <+123>:	mov    ecx,DWORD PTR [ebp-0x4]
+   0x08048489 <+126>:	leave            <------- Freigabe 
+   0x0804848a <+127>:	lea    esp,[ecx-0x4]
+   0x0804848d <+130>:	ret    
+
+
+Also:
+Speicherplatz für das äußere und das innere i werden
+in diesem speziellen Fall gleich zu Beginn der Funktion
+main im Stack-Frame reserviert und erst ganz am Schluss
+mittels 'leave' wieder freigegeben.   
+
+  Verlasse Full-Screen: Strg-x a
+
+#---
+
+Sichtbarkeit:
+Achtung:
+Sichtbarkeit ist ein Konzept der Compile-Time!
+Nur weil wir mit Flag -g übersetzen, können wir zur Laufzeit
+im Debugger die Information über Sichtbarkeit zur Compile-Time
+überhaupt darstellen.
+
+- Welche Variable wird wann via Name 'i' angesprochen?
+  Nutze Befehl 'print &i'
+
+Programm im Einzelschritt ausführen
+
+   │7                                                                           │
+B+>│8         i =0x11223344;                                                    │
+   │9         k =0xaabbccdd;                                                    │
+   │10        printf("Outer block before inner block: i = %x k = %x\n", i, k);  │
+
+
+(gdb) p &i
+$1 = (int *) 0xbffff0f4
+(gdb) p &k
+$2 = (int *) 0xbffff0f8
+
+(gdb) next
+(gdb) next
+(gdb) next
+
+   │11        {                                                                 │
+   │12          // inner block                                                  │
+  >│13          k =0x11111111;                                                  │
+   │14          i =0x33333333;                                                  │
+   │15          int i;                                                          │
+   │16          i =0x55667788;                                                  │
+   │17          printf("Inner block: i = %x k = %x\n", i, k);                   │
+   │18        }                                                                 │
+
+
+(gdb) print &i
+$4 = (int *) 0xbffff0fc   <--- !!! das ist schon die Adresse des inneren i
+
+(gdb) stackw
+-----------
+0xbffff0f0: 0x00000001
+0xbffff0f4: 0x11223344   <-- i äußerer Block
+0xbffff0f8: 0xaabbccdd   <-- k äußerer Block
+0xbffff0fc: 0x080484b1   <-- i innerer Block
+0xbffff100: 0xb7fa93dc
+0xbffff104: 0xbffff120
+-----------
+
+(gdb) next
+(gdb) next
+(gdb) stackw
+-----------
+0xbffff0f0: 0x00000001
+0xbffff0f4: 0x33333333
+0xbffff0f8: 0x11111111
+0xbffff0fc: 0x080484b1
+0xbffff100: 0xb7fa93dc
+0xbffff104: 0xbffff120
+-----------
+
+   │11        {                                                                 │
+   │12          // inner block                                                  │
+   │13          k =0x11111111;                                                  │
+   │14          i =0x33333333;                                                  │
+   │15          int i;                                                          │
+  >│16          i =0x55667788;                                                  │
+   │17          printf("Inner block: i = %x k = %x\n", i, k);                   │
+   │18        }                                                                 │
+
+
+Uups bzw. Gott sei Dank: die Zuweisung i =0x33333333 wurde mit dem 
+äußeren i durchgeführt.
+
+(gdb) next
+(gdb) next
+(gdb) p &i
+
+$5 = (int *) 0xbffff0f4  <--- das ist wieder die Adresse des äußeren i
+
+   │18        }                                                                 │
+  >│19        printf("Outer block after inner block: i = %x k = %x\n", i, k);   │
+   │20                                                                          │
+   │21        return EXIT_SUCCESS;                                              │
+   │22      }                                                                   │
+
+
+(gdb) cont
+
+Session mit Strg-d verlassen
+

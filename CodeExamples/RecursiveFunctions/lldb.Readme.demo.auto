@@ -1,4 +1,4 @@
-# In a terminal wit at least 82x32
+# In a terminal with at least 82x32
 
 make clean; make
 
