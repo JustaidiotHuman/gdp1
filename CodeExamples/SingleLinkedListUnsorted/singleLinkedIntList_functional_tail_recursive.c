@@ -121,7 +121,7 @@ node_t* list_insert_end_iter(node_t* cur, int data) {
 
 // A wrapper for the tail recursive version with the usual functional interface
 // with slight optimization (*)
-// (*) The condition that checks of the completely empty list
+// (*) The condition that checks for the empty list
 //     is moved into the wrapper.
 node_t* list_insert_end_V1opt(node_t* node, int data) {
   if (node == NULL) {
