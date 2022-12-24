@@ -21,8 +21,181 @@ ln -s git_public_GdP1/Debugger-LLDB .
 # Whenever you load any lldb ressources (scripts etc.) use
 # the path prefix ~/Debugger-LLDB
 #
+# Always specify the appropriate version of the breakpoint script,
+# which needs to support the storage model of your worm.
 
-# Example
+# Examples:
 
 lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm020/lldb_breakpoint_script_init
+
+lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm050/lldb_breakpoint_script_init
+
+lldb -p `pidof worm` -s ~/Debugger-LLDB/FABR/Worm070/lldb_breakpoint_script_init
+
+######################################
+# For Ubuntu Linux installations, only
+######################################
+
+#-------------------------------------
+# Ubuntu 22.04 and lldb version 14
+# The lldb-package creates wrong links
+# Patch the python environment
+
+sudo apt-get install lldb
+sudo apt-get install python3-lldb-14
+
+# Check
+
+$ dpkg -l '*lldb*' | grep ii
+ii  liblldb-14       1:14.0.0-1ubuntu1 amd64        Next generation, high-performance debugger, library
+ii  lldb:amd64       1:14.0-55~exp2    amd64        Next generation, high-performance debugger
+ii  lldb-14          1:14.0.0-1ubuntu1 amd64        Next generation, high-performance debugger
+ii  python3-lldb-14  1:14.0.0-1ubuntu1 amd64        Next generation, high-performance debugger, python3 lib
+
+$ lldb -v
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'lldb.embedded_interpreter'
+lldb version 14.0.0
+
+$ dpkg -L liblldb-14
+/.
+/usr
+/usr/lib
+/usr/lib/llvm-14
+/usr/lib/llvm-14/lib
+/usr/lib/llvm-14/lib/liblldbIntelFeatures.so.14
+/usr/lib/x86_64-linux-gnu
+/usr/lib/x86_64-linux-gnu/liblldb-14.so.1
+/usr/share
+/usr/share/doc
+/usr/share/doc/liblldb-14
+/usr/share/doc/liblldb-14/copyright
+/usr/share/lintian
+/usr/share/lintian/overrides
+/usr/share/lintian/overrides/liblldb-14
+/usr/lib/llvm-14/lib/liblldb.so.1
+/usr/lib/x86_64-linux-gnu/liblldb-14.so
+/usr/share/doc/liblldb-14/NEWS.Debian.gz
+/usr/share/doc/liblldb-14/changelog.Debian.gz
+
+$ dpkg -L lldb:amd64
+/.
+/usr
+/usr/bin
+/usr/share
+/usr/share/doc
+/usr/share/doc/lldb
+/usr/share/doc/lldb/NEWS.Debian.gz
+/usr/share/doc/lldb/changelog.gz
+/usr/share/doc/lldb/copyright
+/usr/share/man
+/usr/share/man/man1
+/usr/bin/lldb
+/usr/bin/lldb-argdumper
+/usr/bin/lldb-server
+/usr/share/man/man1/lldb.1.gz
+
+$ dpkg -L python3-lldb-14
+/.
+/usr
+/usr/lib
+/usr/lib/llvm-14
+/usr/lib/llvm-14/lib
+/usr/lib/llvm-14/lib/python3
+/usr/lib/llvm-14/lib/python3/dist-packages
+/usr/lib/llvm-14/lib/python3/dist-packages/lldb
+/usr/lib/llvm-14/lib/python3.10
+/usr/lib/llvm-14/lib/python3.10/dist-packages
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/__init__.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/embedded_interpreter.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/Logger.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/__init__.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/attrib_fromdict.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/cache.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/cpp
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/cpp/__init__.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/cpp/gnu_libstdcpp.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/cpp/libcxx.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/metrics.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/formatters/synth.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/plugins
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/plugins/__init__.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/plugins/scripted_process.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/utils
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/utils/__init__.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/utils/in_call_stack.py
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/utils/symbolication.py
+/usr/lib/python3
+/usr/lib/python3/dist-packages
+/usr/share
+/usr/share/doc
+/usr/share/doc/python3-lldb-14
+/usr/share/doc/python3-lldb-14/copyright
+/usr/lib/llvm-14/lib/python3/dist-packages/lldb/_lldb.so
+/usr/lib/llvm-14/lib/python3/dist-packages/lldb/libLLVM-14.0.0.so.1
+/usr/lib/llvm-14/lib/python3/dist-packages/lldb/libLLVM-14.so.1
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/_lldb.cpython-310-x86_64-linux-gnu.so
+/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb/lldb-argdumper
+/usr/lib/python3/dist-packages/lldb
+/usr/share/doc/python3-lldb-14/NEWS.Debian.gz
+/usr/share/doc/python3-lldb-14/changelog.Debian.gz
+
+$ lldb -P
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'lldb.embedded_interpreter'
+/usr/lib/local/lib/python3.10/dist-packages
+
+==> the path above is nonsense !!!
+
+# For a fix see
+# https://github.com/vadimcn/vscode-lldb/issues/269
+# https://bugs.launchpad.net/ubuntu/+source/llvm-defaults/+bug/1972855
+
+# Correct the miss-configured python path
+# This fixes the bug
+
+# Create the directory with the wrong name and put a link inside
+sudo mkdir -p /usr/lib/local/lib/python3.10
+sudo ln -s /usr/lib/llvm-14/lib/python3.10/dist-packages /usr/lib/local/lib/python3.10/dist-packages
+
+# Additional fix for non-existing link targets
+#
+#   lldb-argdumper
+#   liblldb.so
+
+regensbu@ideapad1:/usr/lib/llvm-14/lib/python3.10/dist-packages/lldb
+$ ls -la
+lrwxrwxrwx 1 root root     33 Mär 24  2022 lldb-argdumper -> ../../../../../bin/lldb-argdumper
+lrwxrwxrwx 1 root root     29 Mär 24  2022 _lldb.cpython-310-x86_64-linux-gnu.so -> ../../../../../lib/liblldb.so
+
+# In a sudo shell
+
+cd /usr/lib/llvm-14/lib/python3.10/dist-packages/lldb
+
+ls - la
+
+rm lldb-argdumper
+rm _lldb.cpython-310-x86_64-linux-gnu.so
+
+ln -s /usr/lib/llvm-14/bin/lldb-argdumper lldb-argdumper
+ln -s /usr/lib/x86_64-linux-gnu/liblldb-14.so _lldb.cpython-310-x86_64-linux-gnu.so
+
+ls -la
+
+#>
+insgesamt 684
+drwxr-xr-x 5 root root   4096 Dez 24 12:55 .
+drwxr-xr-x 3 root root   4096 Dez 24 11:23 ..
+-rw-r--r-- 1 root root   4415 Mär 24  2022 embedded_interpreter.py
+drwxr-xr-x 3 root root   4096 Dez 24 11:23 formatters
+-rw-r--r-- 1 root root 669843 Mär 24  2022 __init__.py
+lrwxrwxrwx 1 root root     35 Dez 24 12:55 lldb-argdumper -> /usr/lib/llvm-14/bin/lldb-argdumper
+lrwxrwxrwx 1 root root     39 Dez 24 12:55 _lldb.cpython-310-x86_64-linux-gnu.so -> /usr/lib/x86_64-linux-gnu/liblldb-14.so
+drwxr-xr-x 2 root root   4096 Dez 24 11:23 plugins
+drwxr-xr-x 2 root root   4096 Dez 24 11:23 utils
+
 
