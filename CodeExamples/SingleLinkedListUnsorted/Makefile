@@ -22,8 +22,8 @@ TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
 # Generate debugging symbols
 CFLAGS = -g -Wall
 
-# Optimize code (incl. TCO)
-CFLAGS += -O2
+# Optimize code (incl. TCO) but without inline
+CFLAGS += -O2 -fno-inline-small-functions
 
 #### Fixed variable definitions
 CC = gcc
