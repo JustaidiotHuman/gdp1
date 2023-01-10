@@ -1,0 +1,25 @@
+Reading symbols from bin/singleLinkedIntList_functional_tail_recursive_demo...fertig.
+Dump of assembler code for function list_insert_end_aux_V1opt:
+   0x00000870 <+0>:	push   %ebx
+   0x00000871 <+1>:	sub    $0x8,%esp
+   0x00000874 <+4>:	mov    0x10(%esp),%ebx
+   0x00000878 <+8>:	test   %ebx,%ebx
+   0x0000087a <+10>:	jne    0x882 <list_insert_end_aux_V1opt+18>
+   0x0000087c <+12>:	jmp    0x8a8 <list_insert_end_aux_V1opt+56>
+   0x0000087e <+14>:	xchg   %ax,%ax
+   0x00000880 <+16>:	mov    %eax,%ebx
+   0x00000882 <+18>:	mov    0x4(%ebx),%eax
+   0x00000885 <+21>:	test   %eax,%eax
+   0x00000887 <+23>:	jne    0x880 <list_insert_end_aux_V1opt+16>
+   0x00000889 <+25>:	sub    $0xc,%esp
+   0x0000088c <+28>:	pushl  0x20(%esp)
+   0x00000890 <+32>:	call   0x6e0 <list_create_node>
+   0x00000895 <+37>:	mov    %eax,0x4(%ebx)
+   0x00000898 <+40>:	mov    0x28(%esp),%eax
+   0x0000089c <+44>:	add    $0x18,%esp
+   0x0000089f <+47>:	pop    %ebx
+   0x000008a0 <+48>:	ret    
+   0x000008a1 <+49>:	lea    0x0(%esi,%eiz,1),%esi
+   0x000008a8 <+56>:	mov    0x1c(%esp),%ebx
+   0x000008ac <+60>:	jmp    0x889 <list_insert_end_aux_V1opt+25>
+End of assembler dump.

@@ -1,0 +1,4 @@
+Reading symbols from bin/singleLinkedIntList_functional_tail_recursive_demo...fertig.
+Dump of assembler code for function list_insert_end_aux_V2:
+   0x00000810 <+0>:	jmp    0x780 <list_insert_end_aux_V1>
+End of assembler dump.
