@@ -24,6 +24,7 @@
 #include "singleLinkedIntList_type.h"
 
 // forward decls
+extern node_t* list_insert_end_deep_rec(node_t* node, int data);
 
 extern node_t* list_insert_end_V1(node_t*, int);
 extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*);
@@ -44,27 +45,26 @@ extern node_t* list_free(node_t* node);
 // Some variants for inserting data at the end of a linked list
 // --------------------------------------------------------------
 
-/* Original deep recursive version
-
-   node_t* list_insert_end(node_t* node, int data) {
-// Is the list empty
-if (node == NULL) {
-return list_create_node(data);
-} else {
-// Recursive call
-node -> next = list_insert_end(node->next, data);
-return node;
+// Original deep recursive version
+node_t* list_insert_end_deep_rec(node_t* node, int data) {
+  // Is the list empty
+  if (node == NULL) {
+    return list_create_node(data);
+  } else {
+    // Recursive call
+    node -> next = list_insert_end_deep_rec(node->next, data);
+    return node;
+  }
 }
-}
 
-*/
 
 // Dispatcher for the various versions
 
 node_t* list_insert_end(node_t* node, int data) {
-  return list_insert_end_V1(node,data);
+  //return list_insert_end_deep_rec(node,data);
+  //return list_insert_end_V1(node,data);
   //return list_insert_end_V2(node,data);
-  //return list_insert_end_V1opt(node,data);
+  return list_insert_end_V1opt(node,data);
   //return list_insert_end_iter(node,data);
 }
 
@@ -97,7 +97,7 @@ node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first) {
   // Return the anchor to the list
   return first;
 }
-
+
 // A variant of the *_aux_V1 function with a single return statement, only.
 // * Note: we need to use a proper 'if-else style' here.
 // * Check, that the compiler can still perform TCO.
@@ -186,7 +186,7 @@ node_t* list_insert_end_aux_V1opt(node_t* cur, int data, node_t* first, node_t* 
 
   return list_insert_end_aux_V1opt(cur->next, data, first, cur);
 }
-
+
 //--------------------------------------------------------------
 // Additional functions, which are not in the focus of this demo
 //--------------------------------------------------------------
