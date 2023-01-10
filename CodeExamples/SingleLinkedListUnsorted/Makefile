@@ -19,9 +19,11 @@ TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
 # There is no need to edit below this line
 #################################################
 
-# Generate debugging symbols?
+# Generate debugging symbols
 CFLAGS = -g -Wall
-#CFLAGS = -g -Wall -O2
+
+# Optimize code (incl. TCO)
+CFLAGS += -O2
 
 #### Fixed variable definitions
 CC = gcc

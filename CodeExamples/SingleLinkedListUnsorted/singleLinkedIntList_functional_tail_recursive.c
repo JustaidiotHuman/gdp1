@@ -5,7 +5,7 @@
 // the optimizer flag -O2 for gcc is specified.
 //
 // Configure
-//    CFLAGS = -g -Wall -O2
+//    CFLAGS += -O2
 // in the Makefile
 //
 // make clean; make
@@ -28,6 +28,9 @@
 extern node_t* list_insert_end_V1(node_t*, int);
 extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*);
 
+extern node_t* list_insert_end_V2(node_t*, int);
+extern node_t* list_insert_end_aux_V2(node_t*, int, node_t*);
+
 extern node_t* list_insert_end_V1opt(node_t*, int);
 extern node_t* list_insert_end_aux_V1opt(node_t*, int, node_t*, node_t*);
 
@@ -43,15 +46,15 @@ extern node_t* list_free(node_t* node);
 
 /* Original deep recursive version
 
-node_t* list_insert_end(node_t* node, int data) {
-  // Is the list empty
-  if (node == NULL) {
-    return list_create_node(data);
-  } else {
-    // Recursive call
-    node -> next = list_insert_end(node->next, data);
-    return node;
-  }
+   node_t* list_insert_end(node_t* node, int data) {
+// Is the list empty
+if (node == NULL) {
+return list_create_node(data);
+} else {
+// Recursive call
+node -> next = list_insert_end(node->next, data);
+return node;
+}
 }
 
 */
@@ -60,6 +63,7 @@ node_t* list_insert_end(node_t* node, int data) {
 
 node_t* list_insert_end(node_t* node, int data) {
   return list_insert_end_V1(node,data);
+  //return list_insert_end_V2(node,data);
   //return list_insert_end_V1opt(node,data);
   //return list_insert_end_iter(node,data);
 }
@@ -72,19 +76,19 @@ node_t* list_insert_end(node_t* node, int data) {
 // Without optimization in the wrapper
 
 node_t* list_insert_end_V1(node_t* node, int data) {
-    return list_insert_end_aux_V1(node, data, node);
+  return list_insert_end_aux_V1(node, data, node);
 }
 
 // Invariant inv: cur != NULL implies first != NULL
 node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first) {
   if (cur == NULL){
-      return list_create_node(data);
+    return list_create_node(data);
   }
 
   // By condition above and (inv): cur and first are both != NULL
   if (cur->next != NULL){
-      // tail recursive call
-      return list_insert_end_aux_V1(cur->next, data, first);
+    // tail recursive call
+    return list_insert_end_aux_V1(cur->next, data, first);
   }
 
   // cur->next == NULL
@@ -92,6 +96,46 @@ node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first) {
   cur -> next = list_create_node(data);
   // Return the anchor to the list
   return first;
+}
+
+// A variant of the *_aux_V1 function with a single return statement, only.
+// * Note: we need to use a proper 'if-else style' here.
+// * Check, that the compiler can still perform TCO.
+//   CAVEAT: we need to comment out _V1, completely.
+//           Otherwise, the optimizer will optimize too much and
+//           will just generate 'jmpq   0x8e0 <list_insert_end_aux_V1>'
+// Invariant inv: cur != NULL implies first != NULL
+node_t* list_insert_end_V2(node_t* node, int data) {
+  return list_insert_end_aux_V2(node, data, node);
+}
+
+node_t* list_insert_end_aux_V2(node_t* cur, int data, node_t* first) {
+  node_t* res = NULL;
+
+  if (cur == NULL){
+    // return list_create_node(data);
+    res = list_create_node(data);
+  } else {
+    // By condition above and (inv): cur and first are both != NULL
+    if (cur->next != NULL){
+      // tail recursive call
+      // return list_insert_end_aux_V1(cur->next, data, first);
+      // Does this still qualify as a tail recursive call?
+      res = list_insert_end_aux_V2(cur->next, data, first);
+      // Check the disassembled code and behold:
+      // res = some_rec_call; return res --> return some_rec_call
+      // The -O2 optimizer recognizes this pattern.
+    } else {
+      // cur->next == NULL
+      // We are at the last node
+      cur -> next = list_create_node(data);
+      // Return the anchor to the list
+      // return first;
+      res = first;
+    }
+  }
+
+  return res;
 }
 
 // ----------------------------------------------------
@@ -127,7 +171,7 @@ node_t* list_insert_end_V1opt(node_t* node, int data) {
   if (node == NULL) {
     return list_create_node(data);
   }
-  
+
   return list_insert_end_aux_V1opt(node->next, data, node, node);
 }
 
