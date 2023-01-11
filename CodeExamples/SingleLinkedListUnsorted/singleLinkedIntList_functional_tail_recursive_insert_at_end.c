@@ -1,7 +1,7 @@
 // We provide iterative and tail-recursive versions for inserting at the end
 //
-// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux_V1, if
-// the optimizer flag -O2 for gcc is specified.
+// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux_V1,
+// if the optimizer flag -O2 for gcc is specified.
 //
 // Configure
 //    CFLAGS += -O2 -fno-inline-small-functions
@@ -10,29 +10,28 @@
 // make clean; make
 // gdb -q  -ex "disassemble list_insert_end_aux_V1" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo7
 //
+// gdb -q  -ex "disassemble list_insert_end_aux_V2" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo7
+//
 // gdb -q  -ex "disassemble list_insert_end_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo7
 //
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
 #include "singleLinkedIntList_type.h"
 
-// forward decls
+// Variants for inserting at the end
 extern node_t* list_insert_end_deep_rec(node_t* node, int data);
 
 extern node_t* list_insert_end_V1(node_t*, int);
 extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*);
-
-extern node_t* list_insert_end_V1opt(node_t*, int);
-extern node_t* list_insert_end_aux_V1opt(node_t*, int, node_t*, node_t*);
 
 extern node_t* list_insert_end_V2(node_t*, int);
 extern node_t* list_insert_end_aux_V2(node_t*, int, node_t*);
 
 extern node_t* list_insert_end_iter(node_t*, int);
 
+// Auxiliary functions
 extern node_t* list_create_node(int data);
 extern void list_dump(node_t *node);
 extern node_t* list_free(node_t* node);
@@ -42,18 +41,13 @@ extern node_t* list_free(node_t* node);
 // --------------------------------------------------------------
 
 // Dispatcher for the various versions
-
 node_t* list_insert_end(node_t* node, int data) {
   //return list_insert_end_deep_rec(node,data);
   //return list_insert_end_V1(node,data);
-  //return list_insert_end_V2(node,data);
-  return list_insert_end_V1opt(node,data);
+  return list_insert_end_V2(node,data);
   //return list_insert_end_iter(node,data);
 }
 
-// ----------------------------------------------------
-// Non optimized tail recursive version V1
-// ----------------------------------------------------
 
 // Deep recursive version
 node_t* list_insert_end_deep_rec(node_t* node, int data) {
@@ -67,119 +61,78 @@ node_t* list_insert_end_deep_rec(node_t* node, int data) {
   }
 }
 
+// ----------------------------------------------------
+// Tail recursive version V1
+// ----------------------------------------------------
 // A wrapper for the tail recursive version with the usual functional interface.
-// Without optimization in the wrapper
 node_t* list_insert_end_V1(node_t* node, int data) {
   return list_insert_end_aux_V1(node, data, node);
 }
 
-// Invariant inv: cur != NULL implies first != NULL
-node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* first) {
+node_t* list_insert_end_aux_V1(node_t* cur, int data, node_t* res) {
   if (cur == NULL){
     return list_create_node(data);
   }
 
-  // By condition above and (inv): cur and first are both != NULL
   if (cur->next != NULL){
     // tail recursive call
-    return list_insert_end_aux_V1(cur->next, data, first);
+    return list_insert_end_aux_V1(cur->next, data, res);
   }
 
   // cur->next == NULL
   // We are at the last node
   cur -> next = list_create_node(data);
-  // Return the anchor to the list
-  return first;
+  return res;
 }
+
 
+// ----------------------------------------------------
+// Tail recursive version V2
+// ----------------------------------------------------
 // A variant of the *_aux_V1 function with a single return statement, only.
 // * Note: we need to use a proper 'if-else style' here.
-// * Check, that the compiler can still perform TCO.
-//   CAVEAT: we need to comment out _V1, completely.
-//           Otherwise, the optimizer will optimize too much and
-//           will just generate 'jmpq   0x8e0 <list_insert_end_aux_V1>'
-// Invariant inv: cur != NULL implies first != NULL
+// * Check, that the compiler can still perform Tail Call Optimization (TCO).
 node_t* list_insert_end_V2(node_t* node, int data) {
   return list_insert_end_aux_V2(node, data, node);
 }
 
-node_t* list_insert_end_aux_V2(node_t* cur, int data, node_t* first) {
-  node_t* res = NULL;
-
+node_t* list_insert_end_aux_V2(node_t* cur, int data, node_t* res) {
   if (cur == NULL){
-    // return list_create_node(data);
     res = list_create_node(data);
   } else {
-    // By condition above and (inv): cur and first are both != NULL
     if (cur->next != NULL){
-      // tail recursive call
-      // return list_insert_end_aux_V1(cur->next, data, first);
       // Does this still qualify as a tail recursive call?
-      res = list_insert_end_aux_V2(cur->next, data, first);
+      res = list_insert_end_aux_V2(cur->next, data, res);
       // Check the disassembled code and behold:
-      // res = some_rec_call; return res --> return some_rec_call
+      // res = some_rec_call; followed by return res; --> return some_rec_call
       // The -O2 optimizer recognizes this pattern.
     } else {
-      // cur->next == NULL
       // We are at the last node
       cur -> next = list_create_node(data);
-      // Return the anchor to the list
-      // return first;
-      res = first;
     }
   }
-
   return res;
 }
 
 // ----------------------------------------------------
 // Iterative version
 // ----------------------------------------------------
-// Compare to list_insert_end_aux_V1
 node_t* list_insert_end_iter(node_t* cur, int data) {
+  node_t *res = cur; // init result
   // Is the list empty
   if (cur == NULL) {
-    return list_create_node(data);
+    res = list_create_node(data);
+  } else {
+    // List is not empty: go to last node
+    while (cur->next != NULL) {
+      cur = cur -> next;
+    }
+    // We are at the last node
+    cur -> next = list_create_node(data);
   }
-  // List is not empty: go to last node
-  node_t* first = cur;
-  while (cur->next != NULL) {
-    cur = cur -> next;
-  }
-  // cur->next == NULL
-  // We are at the last node
-  cur -> next = list_create_node(data);
-  // Return the anchor to the list
-  return first;
-}
-
-// ----------------------------------------------------
-// Tail-recursive version: with slight optimization (*)
-// ----------------------------------------------------
-
-// A wrapper for the tail recursive version with the usual functional interface
-// with slight optimization (*)
-// (*) The condition that checks for the empty list
-//     is moved into the wrapper.
-node_t* list_insert_end_V1opt(node_t* node, int data) {
-  if (node == NULL) {
-    return list_create_node(data);
-  }
-
-  return list_insert_end_aux_V1opt(node->next, data, node, node);
+  return res;
 }
 
-// With -O2 optimization the compiler will generate a tight loop from this code
-//
-// Invariant due to (*) : first != NULL && last != NULL
-node_t* list_insert_end_aux_V1opt(node_t* cur, int data, node_t* first, node_t* last) {
-  if (cur == NULL){
-    last -> next = list_create_node(data);
-    return first;
-  }
-
-  return list_insert_end_aux_V1opt(cur->next, data, first, cur);
-}
 
 //--------------------------------------------------------------
 // Additional functions, which are not in the focus of this demo

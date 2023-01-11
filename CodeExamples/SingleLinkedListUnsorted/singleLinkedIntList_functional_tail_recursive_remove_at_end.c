@@ -1,31 +1,30 @@
-// We provide deep recursive, tail-recursive and iterative versions for deleting at the end
+// We provide deep recursive, tail-recursive and iterative versions
+// for deleting at the end
 //
-// Demonstrate, that the compiler generates a tight loop for list_remove_tail_aux_V1, if
-// the optimizer flag -O2 for gcc is specified.
-
-// TODO
+// Demonstrate, that the compiler generates a tight loop for list_remove_tail_aux,
+// if the optimizer flag -O2 for gcc is specified.
+//
 // make clean; make
-// gdb -q  -ex "disassemble list_insert_end_aux_V1" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo 
+// gdb -q  -ex "disassemble list_remove_tail_tail_rec_aux" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo8
 //
-// gdb -q  -ex "disassemble list_insert_end_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo
+// gdb -q  -ex "disassemble list_remove_tail_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo8
 //
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
 #include "singleLinkedIntList_type.h"
 
-// variants for deleting at the end
+// Variants for deleting at the end
 extern node_t* list_remove_tail_deep_rec(node_t* node);
-extern node_t* list_remove_tail_V1(node_t* node);
-extern node_t* list_remove_tail_aux_V1(node_t* node, node_t* first, node_t* last);
 
-// variants for inserting at the end
-extern node_t* list_insert_end_deep_rec(node_t* node, int data);
+extern node_t* list_remove_tail_tail_rec(node_t* node);
+extern node_t* list_remove_tail_tail_rec_aux(node_t* node, node_t* first, node_t* last);
 
-extern node_t* list_insert_end_V1opt(node_t*, int);
-extern node_t* list_insert_end_aux_V1opt(node_t*, int, node_t*, node_t*);
+extern node_t* list_remove_tail_iter(node_t* node);
+
+// Variants for inserting at the end
+extern node_t* list_insert_end_V2(node_t*, int);
+extern node_t* list_insert_end_aux_V2(node_t*, int, node_t*);
 
 // Auxiliary functions
 extern node_t* list_create_node(int data);
@@ -39,104 +38,122 @@ extern node_t* list_free(node_t* node);
 // Dispatcher for the various versions
 node_t* list_remove_tail(node_t* node) {
   //return list_remove_tail_deep_rec(node);
-  return list_remove_tail_V1(node);
+  return list_remove_tail_tail_rec(node);
+  //return list_remove_tail_iter(node);
 }
 
-// Remove tail node of list
 // Deep recursive version
 node_t* list_remove_tail_deep_rec(node_t* node){
-  if (node == NULL) {
-    return NULL;
-  } else {
+  node_t* res = node;
+  if (node != NULL) {
     if (node->next == NULL) {
       // Remove last node
       free(node);
-      return NULL;
+      res = NULL;
     } else {
       // Recursive call
       node->next = list_remove_tail_deep_rec(node->next);
-      return node;
     }
   }
+  return res;
 }
 
-node_t* list_remove_tail_V1(node_t* node){
-  return list_remove_tail_aux_V1(node, node, NULL);
+// ----------------------------------------------------
+// Tail recursive version
+// ----------------------------------------------------
+// A wrapper for the tail recursive version with the usual functional interface.
+// Check, that the compiler can still perform Tail Call Optimization (TCO).
+node_t* list_remove_tail_tail_rec(node_t* node){
+  return list_remove_tail_tail_rec_aux(node, node, NULL);
 }
 
-// Invariant: node != NULL --> first != NULL   TODO
-node_t* list_remove_tail_aux_V1(node_t* cur, node_t* first, node_t* last){
-  if (cur == NULL){
-    return NULL;
-  } else {
+node_t* list_remove_tail_tail_rec_aux(node_t* cur, node_t* res, node_t* last){
+  if (cur != NULL){
     if (cur->next != NULL){
-      // Tail recursive call
-      return list_remove_tail_aux_V1(cur->next, first, cur);
+      // Does this still qualify as a tail recursive call?
+      res = list_remove_tail_tail_rec_aux(cur->next, res, cur);
+      // Check the disassembled code and behold:
+      // res = some_rec_call; followed by return res; --> return some_rec_call
+      // The -O2 optimizer recognizes this pattern.
     } else {
       // Remove last node
       free(cur);
+
       if (last == NULL){
-        return NULL;
+        // List had only a single element
+        res = NULL;
       } else {
+        // List had more than one element
         last -> next = NULL;
-        return first;
       }
     }
   }
+  return res;
 }
 
-// TODO: add optimized version for V1
-// TODO: add version V2 with if_else
-// TODO: add iterative version
+// ----------------------------------------------------
+// Iterative version
+// ----------------------------------------------------
+node_t* list_remove_tail_iter(node_t* cur){
+  node_t *res = cur; // init result
+  node_t* last = NULL;
+  if (cur != NULL){
+    // List is not empty: go to last node
+    while (cur->next != NULL) {
+      last = cur;
+      cur = cur -> next;
+    }
+    // Remove last node
+    free(cur);
 
+    if (last == NULL){
+      // List had only a single element
+      res = NULL;
+    } else {
+      // List had more than one element
+      last -> next = NULL;
+    }
+  }
+  return res;
+}
+
+
 // --------------------------------------------------------------
 // Some variants for inserting data at the end of a linked list
 // --------------------------------------------------------------
 
 // Dispatcher for the various versions
 node_t* list_insert_end(node_t* node, int data) {
-  //return list_insert_end_deep_rec(node,data);
-  return list_insert_end_V1opt(node,data);
-}
-
-// Original deep recursive version
-node_t* list_insert_end_deep_rec(node_t* node, int data) {
-  // Is the list empty
-  if (node == NULL) {
-    return list_create_node(data);
-  } else {
-    // Recursive call
-    node -> next = list_insert_end_deep_rec(node->next, data);
-    return node;
-  }
+  return list_insert_end_V2(node,data);
 }
 
 // ----------------------------------------------------
-// Tail-recursive version: with slight optimization (*)
+// Tail-recursive version
 // ----------------------------------------------------
-
 // A wrapper for the tail recursive version with the usual functional interface
-// with slight optimization (*)
-// (*) The condition that checks for the empty list
-//     is moved into the wrapper.
-node_t* list_insert_end_V1opt(node_t* node, int data) {
-  if (node == NULL) {
-    return list_create_node(data);
-  }
-
-  return list_insert_end_aux_V1opt(node->next, data, node, node);
+node_t* list_insert_end_V2(node_t* node, int data) {
+  return list_insert_end_aux_V2(node, data, node);
 }
 
-// With -O2 optimization the compiler will generate a tight loop from this code
-// Invariant due to (*) : first != NULL && last != NULL
-node_t* list_insert_end_aux_V1opt(node_t* cur, int data, node_t* first, node_t* last) {
+node_t* list_insert_end_aux_V2(node_t* cur, int data, node_t* res) {
   if (cur == NULL){
-    last -> next = list_create_node(data);
-    return first;
+    res = list_create_node(data);
+  } else {
+    // By condition above and (inv): cur and first are both != NULL
+    if (cur->next != NULL){
+      // Does this still qualify as a tail recursive call?
+      res = list_insert_end_aux_V2(cur->next, data, res);
+      // Check the disassembled code and behold:
+      // res = some_rec_call; followed by return res; --> return some_rec_call
+      // The -O2 optimizer recognizes this pattern.
+    } else {
+      // We are at the last node
+      cur -> next = list_create_node(data);
+    }
   }
-
-  return list_insert_end_aux_V1opt(cur->next, data, first, cur);
+  return res;
 }
+
 
 //--------------------------------------------------------------
 // Additional functions, which are not in the focus of this demo
