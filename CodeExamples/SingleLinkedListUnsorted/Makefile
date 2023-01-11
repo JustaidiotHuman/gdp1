@@ -10,7 +10,8 @@
 
 # Please add all targets in ./bin here
 
-TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo
+TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo7
+TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo8
 TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_iterative_demo
 TARGETS += $(BIN_DIR)/singleLinkedIntList_functional_recursive_demo
 TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
@@ -57,9 +58,14 @@ $(BIN_DIR)/singleLinkedIntList_functional_recursive_demo: \
 	singleLinkedIntList_functional_demo.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-$(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo: \
-	singleLinkedIntList_functional_tail_recursive.o \
-	singleLinkedIntList_functional_tail_recursive_demo.o
+$(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo7: \
+	singleLinkedIntList_functional_tail_recursive_insert_at_end.o \
+	singleLinkedIntList_functional_tail_recursive_demo7.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(BIN_DIR)/singleLinkedIntList_functional_tail_recursive_demo8: \
+	singleLinkedIntList_functional_tail_recursive_remove_at_end.o \
+	singleLinkedIntList_functional_tail_recursive_demo8.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 #### Dependencies

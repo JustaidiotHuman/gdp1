@@ -1,21 +1,17 @@
-// Implementation for unsorted single linked list of integers:
-// We provide iterative and tail-recursive versions
+// We provide iterative and tail-recursive versions for inserting at the end
 //
-// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux, if
+// Demonstrate, that the compiler generates a tight loop for list_insert_end_aux_V1, if
 // the optimizer flag -O2 for gcc is specified.
 //
 // Configure
-//    CFLAGS += -O2
+//    CFLAGS += -O2 -fno-inline-small-functions
 // in the Makefile
 //
 // make clean; make
-// gdb -q  -ex "disassemble list_insert_end_aux_V1" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo 
+// gdb -q  -ex "disassemble list_insert_end_aux_V1" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo7
 //
-// gdb -q  -ex "disassemble list_insert_end_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo
+// gdb -q  -ex "disassemble list_insert_end_iter" -ex "quit" bin/singleLinkedIntList_functional_tail_recursive_demo7
 //
-// NOTE:
-// We use a very simple error handling method.
-// If anything is wrong, we bail out with an exit()
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,11 +25,11 @@ extern node_t* list_insert_end_deep_rec(node_t* node, int data);
 extern node_t* list_insert_end_V1(node_t*, int);
 extern node_t* list_insert_end_aux_V1(node_t*, int, node_t*);
 
-extern node_t* list_insert_end_V2(node_t*, int);
-extern node_t* list_insert_end_aux_V2(node_t*, int, node_t*);
-
 extern node_t* list_insert_end_V1opt(node_t*, int);
 extern node_t* list_insert_end_aux_V1opt(node_t*, int, node_t*, node_t*);
+
+extern node_t* list_insert_end_V2(node_t*, int);
+extern node_t* list_insert_end_aux_V2(node_t*, int, node_t*);
 
 extern node_t* list_insert_end_iter(node_t*, int);
 
@@ -45,7 +41,21 @@ extern node_t* list_free(node_t* node);
 // Some variants for inserting data at the end of a linked list
 // --------------------------------------------------------------
 
-// Original deep recursive version
+// Dispatcher for the various versions
+
+node_t* list_insert_end(node_t* node, int data) {
+  //return list_insert_end_deep_rec(node,data);
+  //return list_insert_end_V1(node,data);
+  //return list_insert_end_V2(node,data);
+  return list_insert_end_V1opt(node,data);
+  //return list_insert_end_iter(node,data);
+}
+
+// ----------------------------------------------------
+// Non optimized tail recursive version V1
+// ----------------------------------------------------
+
+// Deep recursive version
 node_t* list_insert_end_deep_rec(node_t* node, int data) {
   // Is the list empty
   if (node == NULL) {
@@ -57,24 +67,8 @@ node_t* list_insert_end_deep_rec(node_t* node, int data) {
   }
 }
 
-
-// Dispatcher for the various versions
-
-node_t* list_insert_end(node_t* node, int data) {
-  //return list_insert_end_deep_rec(node,data);
-  //return list_insert_end_V1(node,data);
-  //return list_insert_end_V2(node,data);
-  return list_insert_end_V1opt(node,data);
-  //return list_insert_end_iter(node,data);
-}
-
-// ----------------------------------------------------
-// Non optimized tail recursive version V1
-// ----------------------------------------------------
-
 // A wrapper for the tail recursive version with the usual functional interface.
 // Without optimization in the wrapper
-
 node_t* list_insert_end_V1(node_t* node, int data) {
   return list_insert_end_aux_V1(node, data, node);
 }
