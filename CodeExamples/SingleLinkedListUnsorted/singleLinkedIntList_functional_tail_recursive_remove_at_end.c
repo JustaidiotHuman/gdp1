@@ -46,13 +46,13 @@ node_t* list_remove_tail(node_t* node) {
 node_t* list_remove_tail_deep_rec(node_t* node){
   node_t* res = node;
   if (node != NULL) {
-    if (node->next == NULL) {
+    if (node->next != NULL) {
+      // Recursive call
+      node->next = list_remove_tail_deep_rec(node->next);
+    } else {
       // Remove last node
       free(node);
       res = NULL;
-    } else {
-      // Recursive call
-      node->next = list_remove_tail_deep_rec(node->next);
     }
   }
   return res;
