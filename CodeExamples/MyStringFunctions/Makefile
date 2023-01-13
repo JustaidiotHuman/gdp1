@@ -15,6 +15,7 @@ TARGETS += $(BIN_DIR)/myStrCatWithMakro
 TARGETS += $(BIN_DIR)/myStrCmp
 TARGETS += $(BIN_DIR)/myStrCpy
 TARGETS += $(BIN_DIR)/myStrLen
+TARGETS += $(BIN_DIR)/myStrLen_TCO
 TARGETS += $(BIN_DIR)/myStrStr
 TARGETS += $(BIN_DIR)/myStrDup
 TARGETS += $(BIN_DIR)/codeDiff
@@ -24,7 +25,7 @@ TARGETS += $(BIN_DIR)/codeDiff
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -O2
 
 #### Fixed variable definitions
 CC = gcc
