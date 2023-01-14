@@ -20,11 +20,20 @@ TARGETS += $(BIN_DIR)/singleLinkedIntList_showRecursion
 # There is no need to edit below this line
 #################################################
 
-# Generate debugging symbols
+# Generate debugging symbols?
 CFLAGS = -g -Wall
 
-# Optimize code (incl. TCO) but without inline
-CFLAGS += -O2 -fno-inline-small-functions
+MACHINE := $(shell uname -m)
+$(info $$MACHINE is $(MACHINE))
+ifeq ($(MACHINE), i686)
+  CFLAGS += -O2 -fno-inline-small-functions
+else ifeq ($(MACHINE), x86_64)
+  CFLAGS += -O2 -fno-inline-small-functions
+else ifeq ($(MACHINE), armv7l)
+  CFLAGS += -O2 -fno-inline-small-functions
+else
+  CFLAGS += -O2 
+endif
 
 #### Fixed variable definitions
 CC = gcc
