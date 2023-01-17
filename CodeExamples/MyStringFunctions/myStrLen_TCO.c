@@ -1,16 +1,11 @@
-// Nachbau der String-Funktionen aus string.h
-
+// Tail-call optimization for function strlen
+// (C) Franz Regensburger, THI, 2023
+//
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>  // zum Vergleich
 
-#define SUCCESS 0
-#define FAILURE 1
-
-// Berechne die Laenge der Strings
-
-//--
 // Deep recursive
-
 size_t my_strlen_rec(const char * s) {
   size_t len = 0;
   if (*s != '\0'){
@@ -19,9 +14,7 @@ size_t my_strlen_rec(const char * s) {
   return len;
 }
 
-//--
 // Tail recursive
-
 size_t my_strlen_tail_rec_aux(const char * s, size_t len) {
   if (*s != '\0'){
     len = my_strlen_tail_rec_aux(s+1, len+1);
@@ -45,9 +38,7 @@ size_t my_strlen_iter_ptr(const char * s) {
   return len;
 }
 
-//--
 // Loop with array index
-
 size_t my_strlen_iter_idx(const char * s) {
   size_t len = 0;
   size_t i = 0;
@@ -58,8 +49,9 @@ size_t my_strlen_iter_idx(const char * s) {
   return len;
 }
 
+
 //--
-// Disatcher for the various versions
+// Dispatcher for the various versions
 size_t my_strlen(const char * s) {
   //return my_strlen_rec(s);
   //return my_strlen_tail_rec(s);
@@ -68,7 +60,6 @@ size_t my_strlen(const char * s) {
 }
 
 int main(void) {
-  // Test my_strlen()
   {
     char *s1 = "1234567";
     char *s2 = "";
@@ -78,5 +69,5 @@ int main(void) {
         s2, (int) my_strlen(s2), (int) strlen(s2));
   }
 
-  return SUCCESS;
+  return EXIT_SUCCESS;
 }
