@@ -11,6 +11,7 @@
 # Please add all targets in ./bin here
 
 TARGETS += $(BIN_DIR)/localscope
+TARGETS += $(BIN_DIR)/monster
 
 #################################################
 # There is no need to edit below this line
