@@ -13,7 +13,6 @@
 TARGETS += $(BIN_DIR)/hello
 TARGETS += $(BIN_DIR)/helloPerCharacter
 TARGETS += $(BIN_DIR)/helloVariations
-TARGETS += $(BIN_DIR)/helloArrayOutOfBound
 
 #################################################
 # There is no need to edit below this line
