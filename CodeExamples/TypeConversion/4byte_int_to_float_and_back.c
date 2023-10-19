@@ -1,4 +1,4 @@
-// Convert 4 byte signed integer to double and back
+// Convert 4 byte signed integer to float and back
 
 #include <stdio.h>
 
@@ -14,7 +14,7 @@ int main() {
     //i1 = 0x7FFFFFFF;  // largest positive signed 4 byte integer
     i1 = 0x7FFFFFF0;    // some large positive signed 4 byte integer
 
-    f2 = i1;            // convert to double due to assignment
+    f2 = i1;            // convert to float due to assignment
 
     i3 = f2;            // convert back to int due to assignment
 
