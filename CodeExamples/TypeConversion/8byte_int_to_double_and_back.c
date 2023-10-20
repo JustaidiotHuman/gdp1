@@ -12,19 +12,18 @@ int main() {
     printf("Size of i3 in bit: %zd\n", 8 * sizeof(i3));
 
     //i1 = 0x7FFFFFFFFFFFFFFF;  // largest positive signed 8 byte integer
+    //                          // 2^63 = 9223372036854775808
     i1 = 0x7FFFFFFFFFFFFF00;    // some large positive signed 8 byte integer
+                                // 2^63 -256 = 9223372036854775552
 
     d2 = i1;                    // convert to double due to assignment
 
     i3 = d2;                    // convert back to int due to assignment
 
-    // Inspect the result in hexadecimal notation
-    printf("\nDisplaying values in hexadecimal notation\n");
-    printf("i1 = %llx\n", (unsigned long long int) i1);
-    printf("d2 = %llx\n", (unsigned long long int) d2);
-    printf("i3 = %llx\n", (unsigned long long int) i3);
-
-    // Inspect the result (behold values of i1 and i2)
+    // Print the result: behold values of i1 and i2!
+    // Start gdb and set a breakpoint in the next line of code
+    //    dump memory via: x/24xb &i1
+    //             or via: x/3xg  &i1    
     printf("\nDisplaying values corresponding to type of variable\n");
     printf("i1 =  %lld\n", i1);
     printf("d2 =  %f\n"  , d2);

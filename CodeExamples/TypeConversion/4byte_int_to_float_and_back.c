@@ -18,13 +18,10 @@ int main() {
 
     i3 = f2;            // convert back to int due to assignment
 
-    // Inspect the result in hexadecimal notation
-    printf("\nDisplaying values in hexadecimal notation\n");
-    printf("i1 = %x\n", (unsigned int) i1);
-    printf("f2 = %x\n", (unsigned int) f2);
-    printf("i3 = %x\n", (unsigned int) i3);
-
-    // Inspect the result (behold values of i1 and i2)
+    // Print the result: behold values of i1 and i2!
+    // Start gdb and set a breakpoint in the next line of code
+    //    dump memory via: x/12xb &i1
+    //             or via: x/3xw  &i1    
     printf("\nDisplaying values corresponding to type of variable\n");
     printf("i1 =  %d\n", i1);
     printf("f2 =  %f\n", f2);
