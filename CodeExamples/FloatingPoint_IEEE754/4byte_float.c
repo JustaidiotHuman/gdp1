@@ -95,13 +95,17 @@ struct floatrep make_bitrep32(unsigned int ui){
 // ---------------------------------------------------------------------
 
 int main() {
-  float f1 = 0.15625;
-  //float f1 = -0.15625;
+  //float f1 = 0.15625;
+  float f1 = -0.15625;
   //
   // Note: the following value cannot be stored precisely as a binary float
   // It is converted to a binary fraction, which results in -815.47113
   // upon re-convertion to a decimal number
+  //
   //float f1 = -815.4711;
+
+  // Another examples
+  //float f1 = -345686.406250;
 
   // Some pointer voodoo in order to prevent type conversion of values
   unsigned int* uip;
@@ -139,15 +143,15 @@ int main() {
 
   // Recompute the value from the components
   printf("\n");
-  printf("Recomputation of IEEE 754 float:\n");
+  printf("Re-computing the IEEE 754 float from its components:\n");
 
   char sign_factor = (f_rep.sign_val?-1:1);
   printf("           sign_bit: %d\n", f_rep.sign_val);
   printf("        sign_factor: %d\n", sign_factor);
 
   char ex = (f_rep.exponent_val-127);
-  printf("exponent   (biased): %d\n", f_rep.exponent_val);
-  printf("exponent (unbiased): %d\n", ex);
+  printf("exponent (biased): %d\n", f_rep.exponent_val);
+  printf("exponent   (-127): %d\n", ex);
 
   float exp_factor = (ex < 0 ? 1.0/(1<<(-1 * ex)) : 1<<ex);
   printf("    exponent factor: %f\n", exp_factor);
