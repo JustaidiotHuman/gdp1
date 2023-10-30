@@ -209,9 +209,9 @@ int main() {
       printf("  exponent (biased): %d\n", float_rep.exponent_val);
       printf("  exponent  (-1022): %d\n", ex);
 
+      // Compute the significand by successive division by 2
       double significand = 1.0 * float_rep.fraction_val;
       short int ex_cnt = -1 * ex + 52;
-      printf("ex_cnt: %d\n", ex_cnt);
       while (ex_cnt > 0) { significand /= 2.0; ex_cnt--; }
 
       printf(" unshifted fraction: %f\n", 1.0*float_rep.fraction_val);
