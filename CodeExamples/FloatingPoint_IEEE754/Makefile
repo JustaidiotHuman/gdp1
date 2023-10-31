@@ -12,7 +12,6 @@
 
 TARGETS += $(BIN_DIR)/4byte_float
 TARGETS += $(BIN_DIR)/8byte_double
-TARGETS += $(BIN_DIR)/with_args_8byte_double
 
 #################################################
 # There is no need to edit below this line

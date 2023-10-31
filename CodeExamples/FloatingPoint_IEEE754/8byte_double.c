@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 #include <math.h>       /* isnormal */
 
@@ -112,85 +113,248 @@ double shift_float64(double val, short int ex){
   return val;
 }
 
+bool make_float_from_hex64(char* str, double *fp){
+  // We expect something like this as str: c115|1959|a000|0000
+
+  char* p = str;
+  int nibble_cnt=0;
+  char buf[]="x";
+
+  // Search the end of str and do some checks
+  while (*p != '\0'){
+    buf[0] = *p;
+    if (strstr("01234567890aAbBcCdDeEfF|", buf) == NULL){
+      fprintf(stderr,"Hexadecimal value contains illegal character %c\n", (32 <= *p && *p <= 126)?*p:' ');
+      return false;
+    }
+
+    if (*p != '|'){
+      nibble_cnt += 1;
+    }
+    p++;
+  }
+
+  if (nibble_cnt != 16){
+    fprintf(stderr,"Hexadecimal value must contain exactly 16 nibbles\n");
+    return false;
+  }
+
+  // We are at the '\0' of str.
+  if (p != str) p--;
+
+  // Compile the hex value from the nibble string ignoring '|' on the way back
+  unsigned long long ui = 0;
+  unsigned shift = 0;
+  while(str <= p){
+    if (*p != '|'){
+      switch(*p){
+        case '0':
+          break;
+        case '1':
+          ui += 1* (1ULL<<shift);
+          break;
+        case '2':
+          ui += 2* (1ULL<<shift);
+          break;
+        case '3':
+          ui += 3* (1ULL<<shift);
+          break;
+        case '4':
+          ui += 4* (1ULL<<shift);
+          break;
+        case '5':
+          ui += 5* (1ULL<<shift);
+          break;
+        case '6':
+          ui += 6* (1ULL<<shift);
+          break;
+        case '7':
+          ui += 7* (1ULL<<shift);
+          break;
+        case '8':
+          ui += 8* (1ULL<<shift);
+          break;
+        case '9':
+          ui += 9* (1ULL<<shift);
+          break;
+        case 'a':
+        case 'A':
+          ui += 10* (1ULL<<shift);
+          break;
+        case 'b':
+        case 'B':
+          ui += 11* (1ULL<<shift);
+          break;
+        case 'c':
+        case 'C':
+          ui += 12* (1ULL<<shift);
+          break;
+        case 'd':
+        case 'D':
+          ui += 13* (1ULL<<shift);
+          break;
+        case 'e':
+        case 'E':
+          ui += 14* (1ULL<<shift);
+          break;
+        case 'f':
+        case 'F':
+          ui += 15* (1ULL<<shift);
+          break;
+      }
+      shift += 4;
+    }
+    p--;
+  }
+
+  // Assign the bitpattern of the compiled hexvalue to fp
+  unsigned long long* uip;
+  uip = (unsigned long long*) fp;
+  *uip = ui; 
+  return true;
+}
+
+bool make_float_from_bin64(char* str, double *fp){
+  // We expect something like this as str
+  // 1|10000010001|0101000110010101100110100000000000000000000000000000
+
+  char* p = str;
+  int bit_cnt=0;
+  char buf[]="x";
+
+  // Search the end of str and do some checks
+  while (*p != '\0'){
+    buf[0] = *p;
+    if (strstr("01|", buf) == NULL){
+      fprintf(stderr,"Binary value contains illegal character %c\n", (32 <= *p && *p <= 126)?*p:' ');
+      return false;
+    }
+
+    if (*p != '|'){
+      bit_cnt += 1;
+    }
+    p++;
+  }
+
+  if (bit_cnt != 64){
+    fprintf(stderr,"Binary value must contain exactly 64 bits\n");
+    return false;
+  }
+
+  // We are at the '\0' of str.
+  if (p != str) p--;
+
+  // Compile the binary value from the binary string ignoring '|' on the way back
+  unsigned long long ui = 0;
+  unsigned shift = 0;
+  while(str <= p){
+    if (*p != '|'){
+      switch(*p){
+        case '0':
+          break;
+        case '1':
+          ui += 1* (1ULL<<shift);
+          break;
+      }
+      shift += 1;
+    }
+    p--;
+  }
+
+  // Assign the bitpattern of the compiled hexvalue to fp
+  unsigned long long* uip;
+  uip = (unsigned long long*) fp;
+  *uip = ui; 
+  return true;
+}
+
+void usage(char* prog){
+  printf("\nUsage:\n");
+  printf("%s mode values\n", prog);
+  printf("\nwhere mode is one of: -b, -f, -x \n");
+  printf("\nExamples for mode -f: 64bit float\n");
+  printf("%s -f -345686.406250\n", prog);
+  printf("%s -f -3.4568640625E+05\n", prog);
+  printf("\nExamples for mode -b: 64bit binary (bit separators '|' are optional) \n");
+  printf("%s -b '1|10000010001|0101000110010101100110100000000000000000000000000000'\n", prog);
+  printf("\nExamples for mode -x: 64bit hexadecimal (nibble separators '|' are optional) \n");
+  printf("%s -x 'C11|51959a0000000'      some normal case\n", prog);
+  printf("%s -x '000|0000000000000'      non-normal case +zero\n", prog);
+  printf("%s -x '800|0000000000000'      non-normal case -zero\n", prog);
+  printf("%s -x '000|0000000000001'      non-normal case +subnormal\n", prog);
+  printf("%s -x '000|FFFFFFFFFFFFF'      non-normal case +subnormal\n", prog);
+  printf("%s -x '800|0000000000001'      non-normal case -subnormal\n", prog);
+  printf("%s -x '800|FFFFFFFFFFFFF'      non-normal case -subnormal\n", prog);
+  printf("%s -x '7FF|0000000000000'      non-normal case +INF\n", prog);
+  printf("%s -x 'FFF|0000000000000'      non-normal case -INF\n", prog);
+  printf("%s -x '7FF|FFFFFFFFFFFFF'      non-normal case +NAN\n", prog);
+  printf("%s -x 'FFF|FFFFFFFFFFFFF'      non-normal case -NAN\n", prog);
+  printf("\n");
+}
+
 // ---------------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------------
 
-int main() {
+int main(int argc, char **argv) {
   // Check our assumptions about the storage format
   assert(sizeof(double) == 8);
   assert(sizeof(unsigned long long) == 8);
   assert(sizeof(unsigned long long*) == 8);
 
-  // Some example values
-  //double float_val = 0.15625;
-  //double float_val = -0.15625;
-  //double float_val = -815.4711;
-  double float_val = -345686.406250;
-  //double float_val = -345686.40;
-  //double float_val = -34568.64;
+  // Variable for storing the 64bit float
+  double float_val;
+
+  // Process command line (simple)
+  if (argc == 1 || argc > 3){
+    usage(argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  if (strcmp(argv[1],"-f") == 0){
+    if(1 != sscanf(argv[2], "%lf", &float_val)){
+      fprintf(stderr,"Please provide a properly formatted floating point value\n");
+      usage(argv[0]);
+      return EXIT_FAILURE;
+    }
+  } else if (strcmp(argv[1],"-x") == 0){
+    if(! make_float_from_hex64(argv[2], &float_val)){
+      fprintf(stderr,"Please provide a properly formatted hexadecimal string\n");
+      usage(argv[0]);
+      return EXIT_FAILURE;
+    }
+  } else if (strcmp(argv[1],"-b") == 0){
+    if(! make_float_from_bin64(argv[2], &float_val)){
+      fprintf(stderr,"Please provide a properly formatted binary string\n");
+      usage(argv[0]);
+      return EXIT_FAILURE;
+    }
+  } else {
+    printf("Unknown mode\n");
+    usage(argv[0]);
+    return  EXIT_FAILURE;
+  }
 
   // Some pointer voodoo in order to prevent type conversion of values
   // Note:
   // The plain assignment
   //  unsigned long long ui = float_val;
-  // enforces a type conversion
+  // enforces a type conversion, where bits are not preserved
   unsigned long long* uip;
   uip = (unsigned long long*) &float_val;
-  // Now, the unsigned integer variable uip stores the same 64 bit pattern
-  // as the 8 byte double variable float_val
 
-  // For explicit manipulation of the stored float value (for testing)
-  unsigned long long man_sign;
-  unsigned long long man_exp ;
-  unsigned long long man_frac;
-
-  // Patterns for manipulation:
-  // man_sign = 0x8000000000000000;
-  // man_exp  = 0x7FF0000000000000;
-  // man_frac = 0x000FFFFFFFFFFFFF;
-
-  // Case: signed zero
-  //man_sign = 0x8000000000000000;
-  //man_sign = 0x0000000000000000;
-  //man_exp  = 0x0000000000000000;
-  //man_frac = 0x0000000000000000;
-
-  // Case: subnormal
-  man_sign = 0x8000000000000000;
-  //man_sign = 0x0000000000000000;
-  man_exp  = 0x0000000000000000;
-  //man_frac = 0x0000000000000001;
-  man_frac = 0x000FFFFFFFFFFFFF;
-
-  // Case: infinite
-  //man_sign = 0x8000000000000000;
-  //man_sign = 0x0000000000000000;
-  //man_exp  = 0x7FF0000000000000;
-  //man_frac = 0x0000000000000000;
-
-  // Case: not a number
-  //man_sign = 0x8000000000000000;
-  //man_exp  = 0x7FF0000000000000;
-  //man_frac = 0x000FFFFFFFFFFFFF;
-
-  // ---> set do_manipulation = true for manipulation of values
-  bool do_manipulation = false;
-  if (do_manipulation){
-    *uip = man_sign | man_exp | man_frac;
-    printf("%p\n", uip);  // Make the compiler happy about unused variables
-  }
-
+  // Now, the integer pointer uip points to the variable containing the 
+  // 8 byte double variable float_val
 
   printf("\n");
   if (isnormal(float_val)){
-    printf("Double precision float variable float_val (normal): %.20E\n", float_val);
+    printf("Double precision float variable formatted with %%.20E (normal): %.20E\n", float_val);
   } else {
-    //printf("Double precision float variable float_val (non-normal): %.1000E\n", float_val);
-    printf("Double precision float variable float_val (non-normal): %.20E\n", float_val);
+    //printf("Double precision float variable formatted with %%.1000E (non-normal): %.1000E\n", float_val);
+    printf("Double precision float variable formatted with %%.20E (non-normal): %.20E\n", float_val);
   }
   printf("\n");
-  printf("Hexadecimal representation in memory (msb first): %16llx\n", *uip);
+  printf("Hexadecimal representation in memory (msb first): %016llx\n", *uip);
 
   // Create a string representation of the binary value
   struct doublerep float_rep = make_bitrep64(*uip);
@@ -241,8 +405,8 @@ int main() {
 
       double recomputed_val = sign_factor * significand;
       printf(" unshifted fraction: %.20E\n", 1.0*float_rep.fraction_val);
-      //printf("Recomputed value (subnormal): %.1000E\n", recomputed_val);
-      printf("Recomputed value (subnormal): %.20E\n", recomputed_val);
+      //printf("Recomputed value formatted with %%.1000E (subnormal): %.1000E\n", recomputed_val);
+      printf("Recomputed value formatted with %%.20E (subnormal): %.20E\n", recomputed_val);
 
       // Again, some pointer voodoo
       unsigned long long* rip;
@@ -277,7 +441,7 @@ int main() {
     printf("        significand: %.20E\n", significand);
 
     double recomputed_val = 1.0 * sign_factor * exp_factor * significand;
-    printf("Recomputed value:\n");
+    printf("Recomputed value formatted with %%.20E:\n");
     printf("sign_factor * exp_factor * significand: %.20E\n", recomputed_val);
 
     // Again, some pointer voodoo
@@ -292,6 +456,7 @@ int main() {
     }
   }
   printf("\n");
-  return 0;
+
+  return EXIT_SUCCESS;
 }
 
