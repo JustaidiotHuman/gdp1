@@ -4,7 +4,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include<assert.h>
+#include <stdbool.h>
+#include <assert.h>
 #include <math.h>       /* isnormal */
 
 // A data type for modelling the bitwise representation of IEEE 754
@@ -40,7 +41,7 @@ struct doublerep {
 };
 
 // ---------------------------------------------------------------------
-// Convert to binary representation
+// Helpers
 // ---------------------------------------------------------------------
 
 void make_bit_string(unsigned long long ui, char* buf, int pos){
@@ -70,9 +71,9 @@ struct doublerep make_bitrep64(unsigned long long ui){
   res.byte7_val  = (ui & 0x000000000000ff00)>>8;
   res.byte8_val  = (ui & 0x00000000000000ff);
 
-  res.sign_val     = (ui & 0x8000000000000000)>>63; // check
-  res.exponent_val = (ui & 0x7FF0000000000000)>>52; // check
-  res.fraction_val = (ui & 0x000FFFFFFFFFFFFF);     // check
+  res.sign_val     = (ui & 0x8000000000000000)>>63;
+  res.exponent_val = (ui & 0x7FF0000000000000)>>52;
+  res.fraction_val = (ui & 0x000FFFFFFFFFFFFF);
 
   make_bit_string(res.byte1_val, res.byte1_rep, 8);
   make_bit_string(res.byte2_val, res.byte2_rep, 8);
@@ -91,6 +92,25 @@ struct doublerep make_bitrep64(unsigned long long ui){
   return res;
 }
 
+double shift_float64(double val, short int ex){
+  if (ex == 0){
+    // NOP
+  } else if (ex > 0) {
+    // left shift -> multiply by 2.0
+    while (ex > 0) {
+      val *= 2.0;
+      ex--;
+    }
+  } else {
+    // ex < 0
+    // right shift -> devide by 2.0
+    while (ex < 0) {
+      val /= 2.0;
+      ex++;
+    }
+  }
+  return val;
+}
 
 // ---------------------------------------------------------------------
 // MAIN
@@ -121,10 +141,9 @@ int main() {
   // as the 8 byte double variable float_val
 
   // For explicit manipulation of the stored float value (for testing)
-  // ---> Activate the declarations for manipulated values
-  //unsigned long long man_sign;
-  //unsigned long long man_exp ;
-  //unsigned long long man_frac;
+  unsigned long long man_sign;
+  unsigned long long man_exp ;
+  unsigned long long man_frac;
 
   // Patterns for manipulation:
   // man_sign = 0x8000000000000000;
@@ -138,12 +157,12 @@ int main() {
   //man_frac = 0x0000000000000000;
 
   // Case: subnormal
-  //man_sign = 0x8000000000000000;
+  man_sign = 0x8000000000000000;
   //man_sign = 0x0000000000000000;
-  //man_exp  = 0x0000000000000000;
+  man_exp  = 0x0000000000000000;
   //man_frac = 0x0000000000000001;
-  //man_frac = 0x000FFFFFFFFFFFFF;
-  
+  man_frac = 0x000FFFFFFFFFFFFF;
+
   // Case: infinite
   //man_sign = 0x8000000000000000;
   //man_sign = 0x0000000000000000;
@@ -155,14 +174,20 @@ int main() {
   //man_exp  = 0x7FF0000000000000;
   //man_frac = 0x000FFFFFFFFFFFFF;
 
-  // ---> Activate the assignment for manipulated values
-  //*uip = man_sign | man_exp | man_frac;
+  // ---> set do_manipulation = true for manipulation of values
+  bool do_manipulation = false;
+  if (do_manipulation){
+    *uip = man_sign | man_exp | man_frac;
+    printf("%p\n", uip);  // Make the compiler happy about unused variables
+  }
+
 
   printf("\n");
   if (isnormal(float_val)){
     printf("Double precision float variable float_val (normal): %.20E\n", float_val);
   } else {
-    printf("Double precision float variable float_val (non-normal): %.1000E\n", float_val);
+    //printf("Double precision float variable float_val (non-normal): %.1000E\n", float_val);
+    printf("Double precision float variable float_val (non-normal): %.20E\n", float_val);
   }
   printf("\n");
   printf("Hexadecimal representation in memory (msb first): %16llx\n", *uip);
@@ -214,8 +239,22 @@ int main() {
       short int ex_cnt = -1 * ex + 52;
       while (ex_cnt > 0) { significand /= 2.0; ex_cnt--; }
 
-      printf(" unshifted fraction: %f\n", 1.0*float_rep.fraction_val);
-      printf("Recomputed value (subnormal): %.1000E\n", sign_factor * significand);
+      double recomputed_val = sign_factor * significand;
+      printf(" unshifted fraction: %.20E\n", 1.0*float_rep.fraction_val);
+      //printf("Recomputed value (subnormal): %.1000E\n", recomputed_val);
+      printf("Recomputed value (subnormal): %.20E\n", recomputed_val);
+
+      // Again, some pointer voodoo
+      unsigned long long* rip;
+      rip = (unsigned long long*) &recomputed_val;
+
+      // Compare bit representations via pointer dereference
+      if (*uip == *rip){
+        printf("\nBit representations are identical\n");
+      } else {
+        printf("\nBit representations are different\n");
+      }
+
     }
   } else if (float_rep.exponent_val == 0x7ff) {
     if (float_rep.fraction_val == 0){
@@ -230,16 +269,27 @@ int main() {
     printf("  exponent (biased): %d\n", float_rep.exponent_val);
     printf("  exponent  (-1023): %d\n", ex);
 
-    double exp_factor = (ex < 0 ? 1.0/(1ULL<<(-1 * ex)) : 1ULL<<ex);
-    printf("    exponent factor: %f\n", exp_factor);
+    double exp_factor = shift_float64(1.0, ex);
+    printf("    exponent factor: %.20E\n", exp_factor);
 
-    double significand = 1 + (1.0 * float_rep.fraction_val / (1ULL<<52) );
-    printf(" unshifted fraction: %f\n", 1.0*float_rep.fraction_val);
-    printf("        significand: %f\n", significand);
+    double significand = 1.0 + shift_float64(1.0 * float_rep.fraction_val, -52);
+    printf(" unshifted fraction: %.20E\n", 1.0*float_rep.fraction_val);
+    printf("        significand: %.20E\n", significand);
 
+    double recomputed_val = 1.0 * sign_factor * exp_factor * significand;
     printf("Recomputed value:\n");
-    printf("sign_factor * exp_factor * significand: %.20E\n",
-        1.0 * sign_factor * exp_factor * significand);
+    printf("sign_factor * exp_factor * significand: %.20E\n", recomputed_val);
+
+    // Again, some pointer voodoo
+    unsigned long long* rip;
+    rip = (unsigned long long*) &recomputed_val;
+
+    // Compare bit representations via pointer dereference
+    if (*uip == *rip){
+      printf("\nBit representations are identical\n");
+    } else {
+      printf("\nBit representations are different\n");
+    }
   }
   printf("\n");
   return 0;
