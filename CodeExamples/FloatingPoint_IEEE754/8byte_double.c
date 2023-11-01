@@ -300,7 +300,6 @@ int main(int argc, char **argv) {
   // Check our assumptions about the storage format
   assert(sizeof(double) == 8);
   assert(sizeof(unsigned long long) == 8);
-  assert(sizeof(unsigned long long*) == 8);
 
   // Variable for storing the 64bit float
   double float_val;
