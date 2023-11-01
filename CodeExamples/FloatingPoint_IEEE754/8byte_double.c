@@ -347,10 +347,9 @@ int main(int argc, char **argv) {
 
   printf("\n");
   if (isnormal(float_val)){
-    printf("Double precision float variable formatted with %%.20E (normal): %.20E\n", float_val);
+    printf("Double precision float variable formatted with %%.20E (normal):\n\n\t%.20E\n", float_val);
   } else {
-    //printf("Double precision float variable formatted with %%.1000E (non-normal): %.1000E\n", float_val);
-    printf("Double precision float variable formatted with %%.20E (non-normal): %.20E\n", float_val);
+    printf("Double precision float variable formatted with %%.20E (non-normal):\n\t%.20E\n", float_val);
   }
   printf("\n");
   printf("Hexadecimal representation in memory (msb first): %016llx\n", *uip);
@@ -393,19 +392,23 @@ int main(int argc, char **argv) {
       printf("Recomputed value (signed zero): %c0.0\n", sign_factor<0?'-':'+');
     } else {
       // Subnormal number
-      short int ex = (1-1023);
-      printf("  exponent (biased): %d\n", float_rep.exponent_val);
-      printf("  exponent  (-1022): %d\n", ex);
+      short int ex = (-1022);
+      printf("  exponent (   biased): %d\n", float_rep.exponent_val);
+      printf("  exponent (subnormal): %d\n", ex);
+
+      // Compute the exponent by successive division by 2
+      double exp_factor = shift_float64(1.0, ex);
+      printf("    exponent factor: %.20E\n", exp_factor);
 
       // Compute the significand by successive division by 2
-      double significand = 1.0 * float_rep.fraction_val;
-      short int ex_cnt = -1 * ex + 52;
-      while (ex_cnt > 0) { significand /= 2.0; ex_cnt--; }
-
-      double recomputed_val = sign_factor * significand;
+      double significand = 0.0 + shift_float64(1.0 * float_rep.fraction_val, -52);
       printf(" unshifted fraction: %.20E\n", 1.0*float_rep.fraction_val);
-      //printf("Recomputed value formatted with %%.1000E (subnormal): %.1000E\n", recomputed_val);
-      printf("Recomputed value formatted with %%.20E (subnormal): %.20E\n", recomputed_val);
+      printf(" 0.shifted fraction: %.20E\n", significand);
+
+
+      double recomputed_val = 1.0 * sign_factor * exp_factor * significand;
+      printf("Recomputed value formatted with %%.20E:\n");
+      printf("\t(sign_factor * exp_factor * 0.shifted fraction)\n\n\t%.20E\n", recomputed_val);
 
       // Again, some pointer voodoo
       unsigned long long* rip;
@@ -415,7 +418,7 @@ int main(int argc, char **argv) {
       if (*uip == *rip){
         printf("\nBit representations are identical\n");
       } else {
-        printf("\nBit representations are different\n");
+        printf("\nBit representations are different!!!\n");
       }
 
     }
@@ -432,16 +435,18 @@ int main(int argc, char **argv) {
     printf("  exponent (biased): %d\n", float_rep.exponent_val);
     printf("  exponent  (-1023): %d\n", ex);
 
+    // Compute the exponent by successive division by 2
     double exp_factor = shift_float64(1.0, ex);
     printf("    exponent factor: %.20E\n", exp_factor);
 
+    // Compute the significand by successive division by 2
     double significand = 1.0 + shift_float64(1.0 * float_rep.fraction_val, -52);
     printf(" unshifted fraction: %.20E\n", 1.0*float_rep.fraction_val);
-    printf("        significand: %.20E\n", significand);
+    printf(" 1.shifted fraction: %.20E\n", significand);
 
     double recomputed_val = 1.0 * sign_factor * exp_factor * significand;
     printf("Recomputed value formatted with %%.20E:\n");
-    printf("sign_factor * exp_factor * significand: %.20E\n", recomputed_val);
+    printf("\t(sign_factor * exp_factor * 1.shifted fraction)\n\n\t%.20E\n", recomputed_val);
 
     // Again, some pointer voodoo
     unsigned long long* rip;
@@ -451,7 +456,7 @@ int main(int argc, char **argv) {
     if (*uip == *rip){
       printf("\nBit representations are identical\n");
     } else {
-      printf("\nBit representations are different\n");
+      printf("\nBit representations are different!!!\n");
     }
   }
   printf("\n");
