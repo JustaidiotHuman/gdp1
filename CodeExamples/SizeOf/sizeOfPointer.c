@@ -10,10 +10,10 @@ struct pos {
 };
 
 int main() {
-    printf("         char*:\t%02d Bits\n",sizeof(char*)*8); 
-    printf("          int*:\t%02d Bits\n",sizeof(int*)*8); 
-    printf("         void*:\t%02d Bits\n",sizeof(void*)*8); 
-    printf("   struct pos*:\t%02d Bits\n",sizeof(struct pos*)*8); 
+    printf("         char*:\t%02ld Bits\n", (long unsigned int) sizeof(char*)*8); 
+    printf("          int*:\t%02ld Bits\n", (long unsigned int) sizeof(int*)*8); 
+    printf("         void*:\t%02ld Bits\n", (long unsigned int) sizeof(void*)*8); 
+    printf("   struct pos*:\t%02ld Bits\n", (long unsigned int) sizeof(struct pos*)*8); 
 
     return OK;
 }

@@ -45,10 +45,10 @@ int main(void) {
     struct jadresse addr3;
     struct jstudent stud3;
 
-    printf("sizeof %s:%d, netto %d\n","addr2",(int) sizeof(addr2), 20+5+4+20 );
-    printf("sizeof %s:%d, netto %d\n","stud2",(int) sizeof(stud2), 6+5+20+20+(int) sizeof(addr2) );
-    printf("sizeof %s:%d, netto %d\n","addr3",(int) sizeof(addr3), 8+8+4+8 );
-    printf("sizeof %s:%d, netto %d\n","stud3",(int) sizeof(stud3), 5*8 );
+    printf("sizeof %s:%ld, netto %ld\n","addr2", (long unsigned int) sizeof(addr2), (long unsigned int) 20+5+4+20 );
+    printf("sizeof %s:%ld, netto %ld\n","stud2", (long unsigned int) sizeof(stud2), (long unsigned int) 6+5+20+20+ sizeof(addr2) );
+    printf("sizeof %s:%ld, netto %ld\n","addr3", (long unsigned int) sizeof(addr3), (long unsigned int) 3*sizeof(void*) + sizeof(int) );
+    printf("sizeof %s:%ld, netto %ld\n","stud3", (long unsigned int) sizeof(stud3), (long unsigned int) 5*sizeof(void*) );
 
     printf("&strasse:\t%p\n&hausnummer:\t%p\n&postleitzahl:\t%p\n&stadt:\t\t%p\n",
         &addr3.strasse,&addr3.hausnummer,&addr3.postleitzahl,&addr3.stadt);

@@ -21,7 +21,7 @@ TARGETS += $(BIN_DIR)/sizeOfPointer
 #################################################
 
 # Generate debugging symbols?
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -Wno-sizeof-array-argument
 
 #### Fixed variable definitions
 CC = gcc

@@ -5,14 +5,14 @@
 #define OK 0
 
 int main() {
-    printf("         char:\t%02d Bits\n",sizeof(char)*8); 
-    printf("        short:\t%02d Bits\n",sizeof(short int)*8); 
-    printf("          int:\t%02d Bits\n",sizeof(int)*8); 
-    printf("     long int:\t%02d Bits\n",sizeof(long int)*8); 
-    printf("long long int:\t%02d Bits\n",sizeof(long long int)*8); 
-    printf("        float:\t%02d Bits\n",sizeof(float)*8); 
-    printf("       double:\t%02d Bits\n",sizeof(double)*8); 
-    printf("  long double:\t%02d Bits\n",sizeof(long double)*8); 
+    printf("         char:\t%3ld Bits\n", (long unsigned int) sizeof(char)*8); 
+    printf("        short:\t%3ld Bits\n", (long unsigned int) sizeof(short int)*8); 
+    printf("          int:\t%3ld Bits\n", (long unsigned int) sizeof(int)*8); 
+    printf("     long int:\t%3ld Bits\n", (long unsigned int) sizeof(long int)*8); 
+    printf("long long int:\t%3ld Bits\n", (long unsigned int) sizeof(long long int)*8); 
+    printf("        float:\t%3ld Bits\n", (long unsigned int) sizeof(float)*8); 
+    printf("       double:\t%3ld Bits\n", (long unsigned int) sizeof(double)*8); 
+    printf("  long double:\t%3ld Bits\n", (long unsigned int) sizeof(long double)*8); 
 
     return OK;
 }
