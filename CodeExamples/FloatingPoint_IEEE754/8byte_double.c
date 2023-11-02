@@ -279,6 +279,8 @@ void usage(char* prog){
   printf("%s -b '1|10000010001|0101000110010101100110100000000000000000000000000000'\n", prog);
   printf("\nExamples for mode -x: 64bit hexadecimal (nibble separators '|' are optional) \n");
   printf("%s -x 'C11|51959a0000000'      some normal case\n", prog);
+  printf("%s -x '001|0000000000000'      some normal case\n", prog);
+  printf("%s -x '7FE|FFFFFFFFFFFFF'      some normal case\n", prog);
   printf("%s -x '000|0000000000000'      non-normal case +zero\n", prog);
   printf("%s -x '800|0000000000000'      non-normal case -zero\n", prog);
   printf("%s -x '000|0000000000001'      non-normal case +subnormal\n", prog);
