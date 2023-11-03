@@ -12,6 +12,7 @@
 
 TARGETS += $(BIN_DIR)/divideWithRest-V1
 TARGETS += $(BIN_DIR)/divideWithRest-V2
+TARGETS += $(BIN_DIR)/teileMitRest
 
 #################################################
 # There is no need to edit below this line
