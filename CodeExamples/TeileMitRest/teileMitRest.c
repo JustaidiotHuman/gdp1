@@ -1,9 +1,11 @@
 #include<stdio.h>
-#include<assert.h>
+#define FEHLER 42
+#define OK 0
 
-void teile_mit_rest(int a, int b, int* p_q, int* p_r){
-  assert(a>=0);
-  assert(b>0);
+int teile_mit_rest(int a, int b, int* p_q, int* p_r){
+  if (a<0 || b <= 0){
+    return FEHLER;
+  }
 
   int cnt = 0;
   while(a >= b){
@@ -13,16 +15,21 @@ void teile_mit_rest(int a, int b, int* p_q, int* p_r){
 
   *p_q = cnt;
   *p_r = a;
+
+  return OK;
 }
 
 int main(void){
-  int quotient = -1;
-  int rest = -1;
+  int x, y, quotient, rest, res_code;
+  x = 24;
+  y = 9;
 
-  int x = 24;
-  int y = 9;
-  teile_mit_rest(x, y, &quotient, &rest);
+  res_code = teile_mit_rest(x, y, &quotient, &rest);
+  if (res_code != OK){
+    printf("Fehler bei Ausführung von teile_mit_rest\n");
+    return FEHLER;
+  }
 
   printf("Ganzzahlig teilen von %d durch %d geht %d mal Rest %d\n", x, y, quotient, rest);
-  return 0;
+  return OK;
 }
