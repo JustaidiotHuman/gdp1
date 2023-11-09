@@ -8,6 +8,10 @@ cd ~/git_public_GdP1/CodeExamples/Euklid-V05
 # Terminal 1: 75x10
 vim euklid.withRefParameters.c
 
+# Zeilennummer einschalten im Editor
+
+:set nummber
+
 # Terminal 2: 75x14
 
 make clean; make
