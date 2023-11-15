@@ -9,12 +9,14 @@ breakpoint set -n readUserInput
 # that was defined most recently.
 # Here, it attaches to the breakpoint at function 'readUserInput'
 # If you like to attach the command to some other breakpoint you need to
-# provide the breakpoint id as an addtional argument.
+# provide the breakpoint id as an additional argument.
 
 breakpoint command add --python-function lldb_breakpoint_script_worm070.breakpoint_callback --script-type python
 
-# Release process from stop due to attach command.
-# Note: you probably have to press some key in the worm window as well.
+# Release process from the stop that was the result of the attach command.
+# Note: you probably have to press ENTER in the worm window as well.
+#
+# Use commands cont, next, step in order to make progress.
 
 cont
 

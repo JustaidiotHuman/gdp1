@@ -15,7 +15,6 @@ def breakpoint_callback(frame, bp_loc, dict):
     theworm_wormpos_y = target.FindFirstGlobalVariable("theworm_wormpos_y")
 
     # Dump worm configuration
-
     template="\n\ntheworm: headindex=%-3d maxindex=%-3d dx=%-2d dy=%-2d\n"
     print(template % (headindex.signed, maxindex.signed, dx.signed, dy.signed))
 
