@@ -109,7 +109,7 @@ gdb -q bin/itfac3 -ex "disassemble itfac" -ex "quit" > itfac3.disass
 
 # Welche Varianten enthalten (noch) rekursive Aufrufe?
 
-grep call *.disass
+grep call *.disass | grep -v get_pc_thunk
 
 # Vergleiche Ausgabe des Assembler-Codes in den *.disass Dateien
 # in verschiedenen Fenstern oder mittels diff.
