@@ -67,7 +67,7 @@ clean :
 
 .PHONY: disass
 disass :
-	gdb -q bin/fac    -ex "disassemble fac"   -ex "quit" > fac1.disass
+	gdb -q bin/fac    -ex "disassemble fac"   -ex "quit" > fac.disass
 	gdb -q bin/itfac1 -ex "disassemble itfac" -ex "quit" > itfac1.disass
 	gdb -q bin/itfac2 -ex "disassemble itfac" -ex "quit" > itfac2.disass
 	gdb -q bin/itfac3 -ex "disassemble itfac" -ex "quit" > itfac3.disass

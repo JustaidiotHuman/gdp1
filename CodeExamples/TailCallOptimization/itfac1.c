@@ -1,35 +1,3 @@
-// Compile with
-//
-//  mkdir -p bin
-//  gcc -g -Wall itfac1.c -o bin/itfac1
-//
-// Run the binary as a test
-//
-//  bin/itfac1 5
-//  
-//  > output
-//  fac(5)=120
-// 
-// Then, run the debugger
-//
-//  gdb -q bin/itfac1 -ex "disassemble itfac"
-//
-//  (gdb) break itfac
-//  (gdb) run 5
-//  (gdb) cont
-//  (gdb) <enter>
-//  (gdb) ...
-//  (gdb) quit
-//
-//  Now compile with option -O2
-//
-//  gcc -O2 -g -Wall itfac1.c -o bin/itfac1
-//
-//  and run the debugger again like above...
-//
-//  gdb -q bin/itfac1 -ex "disassemble itfac"
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 
