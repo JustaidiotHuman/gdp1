@@ -186,3 +186,6 @@ bin/itfac1 13
 #>
 fac(13)=1932053504
 
+Bei Verwendung des Datentyps unsigned long long int (8 Byte ohne Vorzeichen)
+erhalten wir 'erst' für n=21 einen arithmetischen Überlauf.
+
