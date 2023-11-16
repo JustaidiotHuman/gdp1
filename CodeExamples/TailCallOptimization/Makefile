@@ -20,8 +20,12 @@ TARGETS += $(BIN_DIR)/itfac3
 #################################################
 
 # Generate debugging symbols?
-#CFLAGS = -g -Wall -O2
+# Note: use commandline
+#   make CFLAGS_ADD="-O2"
+# to add the compiler flag -O2
+
 CFLAGS = -g -Wall
+CFLAGS += $(CFLAGS_ADD)
 
 #LDFLAGS = -lrt
 LDFLAGS =
@@ -48,7 +52,7 @@ BIN_DIR = bin
 
 ####
 
-all: $(BIN_DIR) $(TARGETS)
+all: $(BIN_DIR) $(TARGETS) disass
 
 #### Fixed build rules
 $(BIN_DIR)/% : %.c
@@ -59,5 +63,12 @@ $(BIN_DIR):
 
 .PHONY: clean
 clean :
-	$(RM_DIR) $(BIN_DIR)
+	$(RM_DIR) $(BIN_DIR) *.disass
+
+.PHONY: disass
+disass :
+	gdb -q bin/fac    -ex "disassemble fac"   -ex "quit" > fac1.disass
+	gdb -q bin/itfac1 -ex "disassemble itfac" -ex "quit" > itfac1.disass
+	gdb -q bin/itfac2 -ex "disassemble itfac" -ex "quit" > itfac2.disass
+	gdb -q bin/itfac3 -ex "disassemble itfac" -ex "quit" > itfac3.disass
 
