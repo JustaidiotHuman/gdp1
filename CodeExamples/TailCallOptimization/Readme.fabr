@@ -173,3 +173,16 @@ Der Java-Compiler darf keine TCO durchführen, weil laut
 Sprachstandard von Java keine Optimierungen erlaubt sind,
 die Stack-Frames hinzufügen oder entfernen :-}
 
+Und übrigens:
+Bei Verwendung des Datentyps int (4 Byte mit Vorzeichen) kommt es
+bereits für n=13 zu einem arithmetischen Überlauf.
+
+13! = 6227020800
+
+aber
+
+bin/itfac1 13
+
+#>
+fac(13)=1932053504
+
