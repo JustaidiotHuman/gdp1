@@ -45,3 +45,4 @@ dist/
 *.log
 *.out
 
+CodeExamples/FloatingPoint_IEEE754/TODO.txt
