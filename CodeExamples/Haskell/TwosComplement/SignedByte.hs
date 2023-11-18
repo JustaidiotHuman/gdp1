@@ -38,10 +38,10 @@ fromInt n = if n < sbyte_min_val || sbyte_max_val < n
 -- Test for the sign of values in type SByte
 
 ispos :: SByte -> Bool
-ispos (SB n) = n <= sbyte_max_val   -- 127 for sbyte_modulus == 256
+ispos (SB n) = n <= sbyte_max_val   --   0 .. 127 for sbyte_modulus == 256
 
 isneg :: SByte -> Bool
-isneg (SB n) = n >  sbyte_max_val
+isneg (SB n) = n >  sbyte_max_val   -- 128 .. 255 for sbyte_modulus == 256
 
 
 -- One's complement
