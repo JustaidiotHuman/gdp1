@@ -50,7 +50,7 @@ trigger the overflow flag are:
 
 int main() {
   assert(sizeof(long long int) == 8);
-  // The value 0x 80 00 00 00 00 00 00 00 ist the
+  // The value 0x 80 00 00 00 00 00 00 00 is the
   // minimal integer for signed integer with 8 byte
   assert(LLONG_MIN == 0x8000000000000000);
   long long int x   = LLONG_MIN;
@@ -77,13 +77,15 @@ int main() {
   // Compiling with the gcc flag -fsanitize=undefined will abort
   // the subtraction statement 'x-y' above during runtime
   //
+  // gcc -g -Wall overflow_64_8byte.c -fsanitize=undefined -o bin/overflow_64_8byte
+  //
   // Check the assembler code generated with/without option -fsanitize=undefined
   //
-  // gcc -S -Wall overflow1.c
-  // less overflow1.s
+  // gcc -S -Wall overflow_64_8byte.c
+  // view overflow_64_8byte.s
   //
-  // gcc -S -Wall overflow1.c -ftrapv
-  // less overflow1.s
+  // gcc -S -Wall overflow_64_8byte.c -fsanitize=undefined
+  // view overflow_64_8byte.s
 
   printf("x-y: res=%lld\n", res);
 

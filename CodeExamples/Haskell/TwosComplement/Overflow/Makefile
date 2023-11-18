@@ -10,7 +10,8 @@
 
 # Please add all targets in ./bin here
 
-TARGETS += $(BIN_DIR)/overflow1
+TARGETS += $(BIN_DIR)/overflow_64_8byte
+TARGETS += $(BIN_DIR)/overflow_64_4byte
 
 #################################################
 # There is no need to edit below this line
