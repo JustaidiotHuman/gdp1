@@ -107,6 +107,14 @@ getLimitsSignedInteger numbits =
     max_val = (modulus `div` 2) -  1
     min_val = (modulus `div` 2) * (-1)
 
+-- Tests of sign bit
+
+ispos :: SBList -> Bool
+ispos (SBL bs) = head bs == 'O'
+
+isneg :: SBList -> Bool
+isneg (SBL bs) = head bs == 'L'
+
 -- ----------------------------------------------------------------------
 -- Implementation of binary arithmetics on type SBList
 -- ----------------------------------------------------------------------
@@ -215,12 +223,47 @@ carry_ripple_adder_raw :: SBList -> SBList -> (Char, SBList)
 carry_ripple_adder_raw (SBL as) (SBL bs) =
   let (cout, ss) = carry_ripple_adder_raw_aux full_adder
                      'O' [] (reverse as) (reverse bs)
-  in (cout, SBL ss)
+  in if length as == length bs
+     then (cout, SBL ss)
+     else error "Function carry_ripple_adder_raw: unequal length of arguments"
   where
     carry_ripple_adder_raw_aux _ cin acc []     []     = (cin, acc)
     carry_ripple_adder_raw_aux f cin acc (a:as) (b:bs) =
       let (co, so) = f a b cin
       in carry_ripple_adder_raw_aux f co (so:acc) as bs
 
+
+-- Addition of signed integers coded as SBLists with overflow detection
+add :: SBList -> SBList -> SBList
+add a b
+   | ispos a && ispos b && isneg thesum = 
+       error "Function add; SBL overflow"
+   | isneg a && isneg b && ispos thesum =
+       error "Function add; SBL overflow"
+   | otherwise                          = thesum  -- ignore the carry out!
+   where
+      (cout, thesum) = carry_ripple_adder_raw a b
+
+-- Addition of signed integers coded as SBLists with overflow detection
+-- Demnonstrate the computation
+add_demo :: SBList -> SBList -> IO ()
+add_demo a b =
+   let (SBL as) = a
+       (SBL bs) = b
+       (SBL ss) = thesum
+   in  putStrLn $
+             "\n    " ++ as ++
+             "\n    " ++ bs ++
+             "\n(+) " ++ replicate (length as) '-' ++
+             "\n    " ++ ss ++
+             "   Flags: " ++
+             (if cout == 'L' then "Carry out (ignore)" else "") ++
+             (if cout == 'L' && overflow then ", " else "") ++
+             (if overflow    then "Arithmetic overflow!" else "") ++
+             "\n"
+   where
+      (cout, thesum) = carry_ripple_adder_raw a b
+      overflow       = ((ispos a && ispos b && isneg thesum) ||
+                        (isneg a && isneg b && ispos thesum))
 
 
