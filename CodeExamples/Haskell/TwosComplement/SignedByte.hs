@@ -11,12 +11,12 @@ sbyte_modulus = 256
 sbyte_max_val = (sbyte_modulus `div` 2) -  1     --   127
 sbyte_min_val = (sbyte_modulus `div` 2) * (-1)   -- (-128)
 
+data SByte = SB Int          deriving (Eq, Ord)
+
 instance Show SByte where
    show (SB n) = "fromInt (" 
                   ++ show (if n > sbyte_max_val then n - sbyte_modulus else n) 
                   ++ ")"
-
-data SByte = SB Int          deriving (Eq, Ord)
 
 -- Representation of integer values n in type SByte
 
