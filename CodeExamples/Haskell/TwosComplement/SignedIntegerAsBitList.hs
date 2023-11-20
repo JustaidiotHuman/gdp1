@@ -245,7 +245,7 @@ add a b
       (cout, thesum) = carry_ripple_adder_raw a b
 
 -- Addition of signed integers coded as SBLists with overflow detection
--- Demnonstrate the computation
+-- Demonstrate the computation
 add_demo :: SBList -> SBList -> IO ()
 add_demo a b =
    let (SBL as) = a
