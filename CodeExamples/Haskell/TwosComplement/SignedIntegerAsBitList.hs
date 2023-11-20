@@ -120,10 +120,11 @@ one's (SBL bs) = SBL (map (\b -> if b == 'L' then 'O' else 'L') bs)
 
 --
 -- Two's complement: fast implementation
--- From lsb to msb
+-- From rightmost bit (LSB) to the leftmost bit (MSB)
 -- * copy all O bits upto the first L bit
 -- * copy the first L bit
 -- * invert all bits left from the first L bit
+
 two's:: SBList -> SBList
 
 two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
@@ -133,4 +134,93 @@ two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
   two's_aux ('L':bs) False acc = two's_aux bs True  ('L':acc)
   two's_aux bs       True  acc =
      reverse (map (\b -> if b == 'L' then 'O' else 'L') bs) ++ acc
+
+-- Logical gates
+
+not_gate  :: Char -> Char
+not_gate  'O' = 'L'
+not_gate  'L' = 'O'
+not_gate   _  = error "not_gate: invalid input"
+
+and_gate  :: Char -> Char -> Char
+and_gate  'O' 'O' = 'O'
+and_gate  'O' 'L' = 'O'
+and_gate  'L' 'O' = 'O'
+and_gate  'L' 'L' = 'L'
+and_gate   _   _  = error "and_gate: invalid input"
+
+or_gate   :: Char -> Char -> Char
+or_gate  'O' 'O' = 'O'
+or_gate  'O' 'L' = 'L'
+or_gate  'L' 'O' = 'L'
+or_gate  'L' 'L' = 'L'
+or_gate   _   _  = error "and_gate: invalid input"
+
+xor_gate  :: Char -> Char -> Char
+xor_gate  'O' 'O' = 'O'
+xor_gate  'O' 'L' = 'L'
+xor_gate  'L' 'O' = 'L'
+xor_gate  'L' 'L' = 'O'
+xor_gate   _   _  = error "and_gate: invalid input"
+
+-- Half adder for a single bit implemented by an and gate and an xor gate
+-- See e.g. https://de.wikipedia.org/wiki/Halbaddierer
+--
+-- Inputs:
+--     a: the bit of first  addend
+--     b: the bit of second addend
+--
+-- Outputs:
+--  cout: the carry out bit
+--     s: the sum of bits a and b
+
+half_adder :: Char -> Char -> (Char, Char)
+
+half_adder a b = 
+  let cout = and_gate a b
+      s    = xor_gate a b
+  in (cout, s)
+
+--
+-- Full adder for a single bit implemented by two half adders and an or-gate
+-- See e.g. https://de.wikipedia.org/wiki/Volladdierer
+--
+-- Inputs:
+--     a: the bit of first  addend
+--     b: the bit of second addend
+--   cin: the carry in
+--
+-- Outputs:
+--  cout: the carry out bit
+--     s: the sum of bits a and b
+
+full_adder :: Char -> Char -> Char -> (Char, Char)
+
+full_adder a b cin = 
+  let (ha1_cout, ha1_s) = half_adder a b
+      (ha2_cout, ha2_s) = half_adder ha1_s cin
+      cout              = or_gate ha1_cout ha2_cout
+      s                 = ha2_s
+  in (cout, s)
+
+--
+-- Carry Ripple Adder for n bits without inverter
+-- This version cannot be used directly for subtraction.
+-- We need to compute the two's complement of the second argument before.
+--
+
+-- The raw adder without overflow detection
+
+carry_ripple_adder_raw :: SBList -> SBList -> (Char, SBList)
+carry_ripple_adder_raw (SBL as) (SBL bs) =
+  let (cout, ss) = carry_ripple_adder_raw_aux full_adder
+                     'O' [] (reverse as) (reverse bs)
+  in (cout, SBL ss)
+  where
+    carry_ripple_adder_raw_aux _ cin acc []     []     = (cin, acc)
+    carry_ripple_adder_raw_aux f cin acc (a:as) (b:bs) =
+      let (co, so) = f a b cin
+      in carry_ripple_adder_raw_aux f co (so:acc) as bs
+
+
 
