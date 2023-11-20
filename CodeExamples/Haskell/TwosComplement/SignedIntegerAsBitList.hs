@@ -1,6 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module SignedByteAsBitList  -- TODO: export without constructor SBL
+module SignedIntegerAsBitList  -- TODO: export without constructor SBL
 where
 
 import Data.List
@@ -19,9 +19,9 @@ instance Show SBList
                            ++ show_aux (drop (len `mod` 8) ls)
                            ++ "\""
      | otherwise         = "fromBitList " ++ show (length ls)
-                           ++ " [" ++  (take 8 ls)
+                           ++ " \"" ++  (take 8 ls)
                            ++ show_aux (drop 8 ls)
-                           ++ "]"
+                           ++ "\""
      where
        len = length ls
        show_aux [] = []
@@ -106,4 +106,31 @@ getLimitsSignedInteger numbits =
     modulus = 2^numbits
     max_val = (modulus `div` 2) -  1
     min_val = (modulus `div` 2) * (-1)
+
+-- ----------------------------------------------------------------------
+-- Implementation of binary arithmetics on type SBList
+-- ----------------------------------------------------------------------
+
+--
+-- One's complement (inversion of bits)
+--
+one's:: SBList -> SBList
+
+one's (SBL bs) = SBL (map (\b -> if b == 'L' then 'O' else 'L') bs)
+
+--
+-- Two's complement: fast implementation
+-- From lsb to msb
+-- * copy all O bits upto the first L bit
+-- * copy the first L bit
+-- * invert all bits left from the first L bit
+two's:: SBList -> SBList
+
+two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
+  where
+  two's_aux [] inv acc = acc
+  two's_aux ('O':bs) False acc = two's_aux bs False ('O':acc)
+  two's_aux ('L':bs) False acc = two's_aux bs True  ('L':acc)
+  two's_aux bs       True  acc =
+     reverse (map (\b -> if b == 'L' then 'O' else 'L') bs) ++ acc
 
