@@ -96,6 +96,12 @@ asInteger (SBL ls)
 
     ival = foldl' (\a c -> if c == 'L' then 2*a + 1 else 2*a) 0 ls
 
+-- Show unsigned integer value of SBList (the unsigend value of two's complement encoding)
+asUnsignedInteger :: SBList -> Integer
+
+asUnsignedInteger (SBL ls) =
+  foldl' (\a c -> if c == 'L' then 2*a + 1 else 2*a) 0 ls
+
 -- Show limits for Integer values encoded as signed integer with numbits
 getLimitsSignedInteger:: Int -> String
 getLimitsSignedInteger numbits =
@@ -125,8 +131,8 @@ isneg (SBL bs) = head bs == 'L'
 stripSBL :: SBList -> [Char]
 stripSBL (SBL ls) = ls
 
-rigthjust :: Int -> [Char] -> [Char]
-rigthjust w s    = replicate (w - (length s)) ' ' ++ s
+rightjust :: Int -> [Char] -> [Char]
+rightjust w s    = replicate (w - (length s)) ' ' ++ s
 
 -- ----------------------------------------------------------------------
 -- Implementation of binary arithmetics on type SBList
@@ -281,6 +287,7 @@ sub a b
 -- -----------------------------------------------------------------------
 
 -- TODO: align to sub_demo
+--
 -- Addition of signed integers coded as SBLists with overflow detection.
 -- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
 -- for background information about overflow detection.
@@ -323,29 +330,41 @@ sub_demo a b =
        ss       = stripSBL thesum
        two's_bs = stripSBL (two's b)
        
-       ia_string      = show (asInteger a)
-       ib_string      = show (asInteger b)
-       itb_string     = show (asInteger (two's b))
-       ithesum_string = show (asInteger thesum)
+       ia_string       = show (asInteger a)
+       ib_string       = show (asInteger b)
+       itb_string      = show (asInteger (two's b))
+       ithesum_string  = show (asInteger thesum)
 
-       width = maximum
-                 (map length [ia_string, ib_string,itb_string, ithesum_string ])
+       uia_string      = show (asUnsignedInteger a)
+       uib_string      = show (asUnsignedInteger b)
+       uitb_string     = show (asUnsignedInteger (two's b))
+       uithesum_string = show (asUnsignedInteger thesum)
 
+       iwidth = maximum
+                 (map length [ia_string, ib_string, itb_string, ithesum_string ])
+
+       uiwidth = maximum
+                 (map length [uia_string, uib_string, uitb_string, uithesum_string ])
    in putStrLn $
          -- Pretty print with demo output
          "\nSubtraction explained:" ++
+         "\n  Integer numbers without parenthesis show the signed integer encoding." ++
+         "\n  Integer numbers within  parenthesis show the original integer value." ++
          "\n    " ++
-         "\n    " ++ as       ++
-         "   the first  operand  : " ++ rigthjust width ia_string ++
-         "\n    " ++ bs       ++
-         "   the second operand  : " ++ rigthjust width ib_string ++
-         "\n    " ++ two's_bs ++
-         "   its two's complement: " ++ rigthjust width itb_string ++
+         "\n    " ++ as       ++ "   the first  operand  : "
+         ++ rightjust uiwidth uia_string ++ "  (" ++ rightjust iwidth ia_string ++ ")" ++
+         "\n    " ++ bs       ++ "   the second operand  : "
+         ++ rightjust uiwidth uib_string ++ "  (" ++ rightjust iwidth ib_string ++ ")" ++
+         "\n    " ++ two's_bs ++ "   its two's complement: "
+         ++ rightjust uiwidth uitb_string ++ "  (" ++ rightjust iwidth itb_string ++ ")" ++
          "\n    " ++
-         "\n    " ++ as       ++ "   " ++ rigthjust width ia_string ++
-         "\n    " ++ two's_bs ++ "   " ++ rigthjust width itb_string ++
+         "\n    " ++ as       ++ "   " ++ rightjust uiwidth uia_string
+         ++ "  (" ++ rightjust iwidth ia_string ++ ")" ++
+         "\n    " ++ two's_bs ++ "   " ++ rightjust uiwidth uitb_string
+         ++ "  (" ++ rightjust iwidth itb_string ++ ")" ++
          "\n(+) " ++ replicate (length as) '-' ++
-         "\n    " ++ ss ++ "   " ++ rigthjust width ithesum_string ++
+         "\n    " ++ ss ++ "   " ++ rightjust uiwidth uithesum_string
+         ++ "  (" ++ rightjust iwidth ithesum_string ++ ")" ++
          "\n" ++
          "\n   Flags:" ++
          "\n     " ++ (if cout == 'L' then "Carry out (ignore)"   else "") ++
