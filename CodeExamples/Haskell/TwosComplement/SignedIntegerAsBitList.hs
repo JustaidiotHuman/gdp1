@@ -115,33 +115,22 @@ ispos (SBL bs) = head bs == 'O'
 isneg :: SBList -> Bool
 isneg (SBL bs) = head bs == 'L'
 
+-- ------------------------------------------------------------
+-- Some helper functions
+-- ------------------------------------------------------------
+-- Only for internal use
+
+-- Strip constructor SBL; extract the list of bits
+
+stripSBL :: SBList -> [Char]
+stripSBL (SBL ls) = ls
+
+rigthjust :: Int -> [Char] -> [Char]
+rigthjust w s    = replicate (w - (length s)) ' ' ++ s
+
 -- ----------------------------------------------------------------------
 -- Implementation of binary arithmetics on type SBList
 -- ----------------------------------------------------------------------
-
---
--- One's complement (inversion of bits)
---
-one's:: SBList -> SBList
-
-one's (SBL bs) = SBL (map (\b -> if b == 'L' then 'O' else 'L') bs)
-
---
--- Two's complement: fast implementation
--- From rightmost bit (LSB) to the leftmost bit (MSB)
--- * copy all O bits upto the first L bit
--- * copy the first L bit
--- * invert all bits left from the first L bit
-
-two's:: SBList -> SBList
-
-two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
-  where
-  two's_aux [] inv acc = acc
-  two's_aux ('O':bs) False acc = two's_aux bs False ('O':acc)
-  two's_aux ('L':bs) False acc = two's_aux bs True  ('L':acc)
-  two's_aux bs       True  acc =
-     reverse (map (\b -> if b == 'L' then 'O' else 'L') bs) ++ acc
 
 -- Logical gates
 
@@ -212,6 +201,31 @@ full_adder a b cin =
   in (cout, s)
 
 --
+-- One's complement (inversion of bits)
+--
+one's:: SBList -> SBList
+
+one's (SBL bs) = SBL (map (\b -> if b == 'L' then 'O' else 'L') bs)
+
+--
+-- Two's complement: fast implementation
+--
+-- From rightmost bit (LSB) to the leftmost bit (MSB)
+-- * copy all O bits upto the first L bit
+-- * copy the first L bit
+-- * invert all bits left from the first L bit
+
+two's:: SBList -> SBList
+
+two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
+  where
+  two's_aux [] inv acc = acc
+  two's_aux ('O':bs) False acc = two's_aux bs False ('O':acc)
+  two's_aux ('L':bs) False acc = two's_aux bs True  ('L':acc)
+  two's_aux bs       True  acc =
+     reverse (map (\b -> if b == 'L' then 'O' else 'L') bs) ++ acc
+
+--
 -- Carry Ripple Adder for n bits without inverter
 -- This version cannot be used directly for subtraction.
 -- We need to compute the two's complement of the second argument before.
@@ -233,8 +247,11 @@ carry_ripple_adder_raw (SBL as) (SBL bs) =
       in carry_ripple_adder_raw_aux f co (so:acc) as bs
 
 
--- Addition of signed integers coded as SBLists with overflow detection
+-- Addition of signed integers coded as SBLists with overflow detection.
+-- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
+-- for background information about overflow detection.
 add :: SBList -> SBList -> SBList
+-- TODO: align to sub
 add a b
    | ispos a && ispos b && isneg thesum = 
        error "Function add; SBL overflow"
@@ -244,13 +261,37 @@ add a b
    where
       (cout, thesum) = carry_ripple_adder_raw a b
 
--- Addition of signed integers coded as SBLists with overflow detection
+
+-- Subtraction of signed integers coded as SBLists with overflow detection.
+-- We explicitly compute the two's complement of the second argument to sub.
+--
+-- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
+-- for background information about overflow detection.
+sub :: SBList -> SBList -> SBList
+sub a b
+   | overflow  = error "Function sub; SBL overflow"
+   | otherwise = thesum  -- ignore the carry out!
+   where
+      (cout, thesum) = carry_ripple_adder_raw a (two's b) -- use two's complement
+      overflow       = ((ispos a && isneg b && isneg thesum) ||
+                        (isneg a && ispos b && ispos thesum))
+
+-- -----------------------------------------------------------------------
+-- Special versions of addition and subtraction for demo purposes
+-- -----------------------------------------------------------------------
+
+-- TODO: align to sub_demo
+-- Addition of signed integers coded as SBLists with overflow detection.
+-- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
+-- for background information about overflow detection.
+--
 -- Demonstrate the computation
+
 add_demo :: SBList -> SBList -> IO ()
 add_demo a b =
-   let (SBL as) = a
-       (SBL bs) = b
-       (SBL ss) = thesum
+   let as = stripSBL a
+       bs = stripSBL b
+       ss = stripSBL thesum
    in  putStrLn $
              "\n    " ++ as ++
              "\n    " ++ bs ++
@@ -265,5 +306,55 @@ add_demo a b =
       (cout, thesum) = carry_ripple_adder_raw a b
       overflow       = ((ispos a && ispos b && isneg thesum) ||
                         (isneg a && isneg b && ispos thesum))
+
+-- Subtraction of signed integers coded as SBLists with overflow detection.
+-- We explicitly compute the two's complement of the second argument to sub.
+--
+-- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
+-- for background information about overflow detection.
+--
+-- Demonstrate the computation
+
+sub_demo :: SBList -> SBList -> IO ()
+sub_demo a b =
+   -- Some definitions for pretty printing
+   let as       = stripSBL a
+       bs       = stripSBL b
+       ss       = stripSBL thesum
+       two's_bs = stripSBL (two's b)
+       
+       ia_string      = show (asInteger a)
+       ib_string      = show (asInteger b)
+       itb_string     = show (asInteger (two's b))
+       ithesum_string = show (asInteger thesum)
+
+       width = maximum
+                 (map length [ia_string, ib_string,itb_string, ithesum_string ])
+
+   in putStrLn $
+         -- Pretty print with demo output
+         "\nSubtraction explained:" ++
+         "\n    " ++
+         "\n    " ++ as       ++
+         "   the first  operand  : " ++ rigthjust width ia_string ++
+         "\n    " ++ bs       ++
+         "   the second operand  : " ++ rigthjust width ib_string ++
+         "\n    " ++ two's_bs ++
+         "   its two's complement: " ++ rigthjust width itb_string ++
+         "\n    " ++
+         "\n    " ++ as       ++ "   " ++ rigthjust width ia_string ++
+         "\n    " ++ two's_bs ++ "   " ++ rigthjust width itb_string ++
+         "\n(+) " ++ replicate (length as) '-' ++
+         "\n    " ++ ss ++ "   " ++ rigthjust width ithesum_string ++
+         "\n" ++
+         "\n   Flags:" ++
+         "\n     " ++ (if cout == 'L' then "Carry out (ignore)"   else "") ++
+         "\n     " ++ (if overflow    then "Arithmetic overflow!" else "") ++
+         "\n"
+   where
+      -- This is the computation for the subtraction
+      (cout, thesum) = carry_ripple_adder_raw a (two's b) -- use two's complement
+      overflow       = ((ispos a && isneg b && isneg thesum) ||
+                        (isneg a && ispos b && ispos thesum))
 
 
