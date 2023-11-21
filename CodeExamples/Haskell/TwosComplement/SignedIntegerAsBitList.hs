@@ -257,15 +257,13 @@ carry_ripple_adder_raw (SBL as) (SBL bs) =
 -- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
 -- for background information about overflow detection.
 add :: SBList -> SBList -> SBList
--- TODO: align to sub
 add a b
-   | ispos a && ispos b && isneg thesum = 
-       error "Function add; SBL overflow"
-   | isneg a && isneg b && ispos thesum =
-       error "Function add; SBL overflow"
-   | otherwise                          = thesum  -- ignore the carry out!
+   | overflow  = error "Function add; SBL overflow"
+   | otherwise = thesum  -- ignore the carry out!
    where
       (cout, thesum) = carry_ripple_adder_raw a b
+      overflow       = ((ispos a && ispos b && isneg thesum) ||
+                        (isneg a && isneg b && ispos thesum))
 
 
 -- Subtraction of signed integers coded as SBLists with overflow detection.
@@ -286,8 +284,6 @@ sub a b
 -- Special versions of addition and subtraction for demo purposes
 -- -----------------------------------------------------------------------
 
--- TODO: align to sub_demo
---
 -- Addition of signed integers coded as SBLists with overflow detection.
 -- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
 -- for background information about overflow detection.
@@ -296,19 +292,41 @@ sub a b
 
 add_demo :: SBList -> SBList -> IO ()
 add_demo a b =
-   let as = stripSBL a
-       bs = stripSBL b
-       ss = stripSBL thesum
+   let as       = stripSBL a
+       bs       = stripSBL b
+       ss       = stripSBL thesum
+       
+       ia_string       = show (asInteger a)
+       ib_string       = show (asInteger b)
+       ithesum_string  = show (asInteger thesum)
+
+       uia_string      = show (asUnsignedInteger a)
+       uib_string      = show (asUnsignedInteger b)
+       uithesum_string = show (asUnsignedInteger thesum)
+
+       iwidth = maximum
+                 (map length [ia_string, ib_string, ithesum_string ])
+
+       uiwidth = maximum
+                 (map length [uia_string, uib_string, uithesum_string ])
    in  putStrLn $
-             "\n    " ++ as ++
-             "\n    " ++ bs ++
-             "\n(+) " ++ replicate (length as) '-' ++
-             "\n    " ++ ss ++
-             "   Flags: " ++
-             (if cout == 'L' then "Carry out (ignore)" else "") ++
-             (if cout == 'L' && overflow then ", " else "") ++
-             (if overflow    then "Arithmetic overflow!" else "") ++
-             "\n"
+         -- Pretty print with demo output
+         "\nAddition explained:" ++
+         "\n  Integer numbers without parenthesis show the signed integer encoding." ++
+         "\n  Integer numbers within  parenthesis show the original integer value." ++
+         "\n    " ++
+         "\n    " ++ as       ++ "   " ++ rightjust uiwidth uia_string
+         ++ "  (" ++ rightjust iwidth ia_string ++ ")" ++
+         "\n    " ++ bs ++ "   " ++ rightjust uiwidth uib_string
+         ++ "  (" ++ rightjust iwidth ib_string ++ ")" ++
+         "\n(+) " ++ replicate (length as) '-' ++
+         "\n    " ++ ss ++ "   " ++ rightjust uiwidth uithesum_string
+         ++ "  (" ++ rightjust iwidth ithesum_string ++ ")" ++
+         "\n" ++
+         "\n   Flags:" ++
+         "\n     " ++ (if cout == 'L' then "Carry out (ignore)"   else "") ++
+         "\n     " ++ (if overflow    then "Arithmetic overflow!" else "") ++
+         "\n"
    where
       (cout, thesum) = carry_ripple_adder_raw a b
       overflow       = ((ispos a && ispos b && isneg thesum) ||
