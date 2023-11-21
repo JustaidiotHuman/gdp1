@@ -1,6 +1,10 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module SignedIntegerAsBitList  -- TODO: export without constructor SBL
+module SignedIntegerAsBitList(SBList, show,
+       fromBitList, mkFromInteger,
+       asInteger, asUnsignedInteger,
+       getLimitsSignedInteger,
+       one's, two's, add, sub, add_demo, sub_demo)
 where
 
 import Data.List
