@@ -75,7 +75,7 @@ int main() {
   //              compiler-flags-for-checking-integer-overflow
   //
   // Compiling with the gcc flag -fsanitize=undefined will abort
-  // the subtraction statement 'x-y' above during runtime
+  // the addition statement 'x+y' above during runtime
   //
   // gcc -g -Wall overflow_64_4byte.c -fsanitize=undefined -o bin/overflow_64_4byte
   //
