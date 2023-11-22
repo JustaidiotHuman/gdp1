@@ -1,0 +1,10 @@
+# As normal user
+
+sudo apt-get update
+
+sudo apt-get install ghc ghc-doc cabal-install
+
+# Suggested
+
+sudo apt-get install ghc-prof llvm-13 gmp-doc libgmp10-doc libmpfr-dev
+
