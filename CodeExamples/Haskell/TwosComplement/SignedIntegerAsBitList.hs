@@ -161,14 +161,14 @@ or_gate  'O' 'O' = 'O'
 or_gate  'O' 'L' = 'L'
 or_gate  'L' 'O' = 'L'
 or_gate  'L' 'L' = 'L'
-or_gate   _   _  = error "and_gate: invalid input"
+or_gate   _   _  = error "or_gate: invalid input"
 
 xor_gate  :: Char -> Char -> Char
 xor_gate  'O' 'O' = 'O'
 xor_gate  'O' 'L' = 'L'
 xor_gate  'L' 'O' = 'L'
 xor_gate  'L' 'L' = 'O'
-xor_gate   _   _  = error "and_gate: invalid input"
+xor_gate   _   _  = error "xor_gate: invalid input"
 
 -- Half adder for a single bit implemented by an and gate and an xor gate
 -- See e.g. https://de.wikipedia.org/wiki/Halbaddierer
@@ -235,29 +235,60 @@ two's (SBL bs) = SBL (two's_aux (reverse bs) False [])
   two's_aux bs       True  acc =
      reverse (map (\b -> if b == 'L' then 'O' else 'L') bs) ++ acc
 
---
--- Carry Ripple Adder for n bits without inverter
+-- ----------------------------------------------------------------------
+-- Carry Ripple Adder for n bits without inverter.
+-- ----------------------------------------------------------------------
 -- This version cannot be used directly for subtraction.
 -- We need to compute the two's complement of the second argument before.
+-- The ripple adder does not care about overflow detection.
 --
+-- The overflow detection is done by functions add and sub or
+-- their variants add_demo and sub_demo.
 
--- The raw adder without overflow detection
+-- ----------------------------------------------------
+-- This is a version of the ripple adder implemented by
+-- an explicit recursion.
 
-carry_ripple_adder_raw :: SBList -> SBList -> (Char, SBList)
-carry_ripple_adder_raw (SBL as) (SBL bs) =
-  let (cout, ss) = carry_ripple_adder_raw_aux full_adder
+carry_ripple_exp_rec :: SBList -> SBList -> (Char, SBList)
+carry_ripple_exp_rec (SBL as) (SBL bs) =
+  let (cout, ss) = carry_ripple_aux full_adder
                      'O' [] (reverse as) (reverse bs)
   in if length as == length bs
      then (cout, SBL ss)
-     else error "Function carry_ripple_adder_raw: unequal length of arguments"
+     else error "Function carry_ripple: unequal length of arguments"
   where
-    carry_ripple_adder_raw_aux _ cin acc []     []     = (cin, acc)
-    carry_ripple_adder_raw_aux f cin acc (a:as) (b:bs) =
+    carry_ripple_aux _ cin acc []     []     = (cin, acc)
+    carry_ripple_aux f cin acc (a:as) (b:bs) =
       let (co, so) = f a b cin
-      in carry_ripple_adder_raw_aux f co (so:acc) as bs
+      in carry_ripple_aux f co (so:acc) as bs
+
+-- ----------------------------------------------------
+-- This is a version of the ripple adder implemented by
+-- the folding operator foldl'
+
+-- The function full_adder_adaptor wraps the standard full_adder.
+-- This adaptor can be used as the function passed to foldl', which
+-- needs to transport the current carry and the accumulated sum bits
+-- as a single argument.
+
+carry_ripple :: SBList -> SBList -> (Char, SBList)
+carry_ripple (SBL as) (SBL bs) =
+  if length as == length bs
+  then (cout, SBL ss)
+  else error "Function carry_ripple: unequal length of arguments"
+
+  where
+    (cout, ss) = foldl' full_adder_adaptor ('O',[]) (zip (reverse as) (reverse bs))
+
+    full_adder_adaptor :: (Char, [Char]) -> (Char, Char) -> (Char, [Char])
+    full_adder_adaptor (ci, acc_ss) (a,b) =
+      let (co, s) = full_adder a b ci
+      in (co, s:acc_ss)
 
 
+-- ----------------------------------------------------------------------
 -- Addition of signed integers coded as SBLists with overflow detection.
+-- ----------------------------------------------------------------------
 -- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
 -- for background information about overflow detection.
 add :: SBList -> SBList -> SBList
@@ -265,12 +296,14 @@ add a b
    | overflow  = error "Function add; SBL overflow"
    | otherwise = thesum  -- ignore the carry out!
    where
-      (cout, thesum) = carry_ripple_adder_raw a b
+      (cout, thesum) = carry_ripple a b
       overflow       = ((ispos a && ispos b && isneg thesum) ||
                         (isneg a && isneg b && ispos thesum))
 
 
+-- ----------------------------------------------------------------------
 -- Subtraction of signed integers coded as SBLists with overflow detection.
+-- ----------------------------------------------------------------------
 -- We explicitly compute the two's complement of the second argument to sub.
 --
 -- See http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt
@@ -280,7 +313,7 @@ sub a b
    | overflow  = error "Function sub; SBL overflow"
    | otherwise = thesum  -- ignore the carry out!
    where
-      (cout, thesum) = carry_ripple_adder_raw a (two's b) -- use two's complement
+      (cout, thesum) = carry_ripple a (two's b) -- use two's complement
       overflow       = ((ispos a && isneg b && isneg thesum) ||
                         (isneg a && ispos b && ispos thesum))
 
@@ -332,7 +365,7 @@ add_demo a b =
          "\n     " ++ (if overflow    then "Arithmetic overflow!" else "") ++
          "\n"
    where
-      (cout, thesum) = carry_ripple_adder_raw a b
+      (cout, thesum) = carry_ripple a b
       overflow       = ((ispos a && ispos b && isneg thesum) ||
                         (isneg a && isneg b && ispos thesum))
 
@@ -394,7 +427,7 @@ sub_demo a b =
          "\n"
    where
       -- This is the computation for the subtraction
-      (cout, thesum) = carry_ripple_adder_raw a (two's b) -- use two's complement
+      (cout, thesum) = carry_ripple a (two's b) -- use two's complement
       overflow       = ((ispos a && isneg b && isneg thesum) ||
                         (isneg a && ispos b && ispos thesum))
 
