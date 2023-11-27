@@ -8,13 +8,16 @@ or   on RISC ARM platforms like raspberry Pi, Apple M1/M2).
 # Build
 # ----------------------------------------------------------
 
+cd ~/git_public_GdP1
+git pull
+
 cd ~/git_public_GdP1/CodeExamples/Stack
 make clean; make
 
 # ----------------------------------------------------------
 # Start debugger in a terminal
 # ----------------------------------------------------------
-# Size 70x20
+# Size 80x20
 
 lldb bin/swap-V1 
 
@@ -45,16 +48,18 @@ lldb bin/swap-V1
 
 # The program stops at the breakpoint
 
-Process 3149 stopped
+Process 5908 launched: '/home/regensbu/git_public_GdP1/CodeExamples/Stack/bin/swap-V1' (x86_64)
+Process 5908 stopped
 * thread #1, name = 'swap-V1', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546b1 swap-V1` main  + 8 at swap-V1.c:21
    18  	int main() {
    19  	    int i1,i2;
-   20
+   20  	
 -> 21  	    i1=0x11223344;
    22  	    i2=0x55667788;
-   23
+   23  	
    24  	    swap(i1,i2);
+(lldb)
 
 # * execute the program line by line in single steps relative to source code.
 # * enter function swap
@@ -72,7 +77,10 @@ Process 3149 stopped
 # finish: finish executing the current stack frame and stop after returning.
 #       'finish' (not 'f') is an abbreviation for 'thread step-out'
 #
-
+#      f: the single letter 'f' is an abreviation for command 'process status'
+#         that prints the current line in the source code with 3 lines before
+#         and after the current line as a context
+#
 # Hint 2: you may start a GUI via command gui as well.
 # However, this is overkill in our case.
 #
@@ -80,9 +88,10 @@ Process 3149 stopped
 
 # Hint 3: show content of variables along the debugging tour
 #
-# show content of variable f in hex
+# show content of variable a in hex notation
 # (lldb) p/x a
-# show content of a variables belonging to the current frame
+#
+# show content of all variables belonging to the current frame
 # (lldb) frame variable -f x
 
 (lldb) step
@@ -91,7 +100,7 @@ or simply
 (lldb) <enter> will execute last command once more
 ...
 
-Process 3149 stopped
+Process 5908 stopped
 * thread #1, name = 'swap-V1', stop reason = step in
     frame #0: 0x00005555555546ce swap-V1` main  + 37 at swap-V1.c:26
    23
@@ -108,12 +117,11 @@ Process 3149 stopped
 
 # The programs produces output and terminates
 
-Process 3440 resuming
+Process 5908 resuming
 After swap
 i1: 11223344
 i2: 55667788
-Process 3440 exited with status = 0 (0x00000000) 
-
+Process 5908 exited with status = 0 (0x00000000) 
 
 #--------------------------------------------------------------------
 # Demo 2: Display assembler code with annotated C and/or machine code
@@ -227,10 +235,11 @@ swap-V1`main:
 
 0x55555555470b <+98>: leave  
 0x55555555470c <+99>: retq 
+
 #----------
 # Show a hex dump of the machine code of function main
 
-x/112xb main
+x/100xb main
 
 #>
 0x5555555546a9: 0x55 0x48 0x89 0xe5 0x48 0x83 0xec 0x10
@@ -245,16 +254,15 @@ x/112xb main
 0x5555555546f1: 0x45 0xfc 0x89 0xc6 0x48 0x8d 0x3d 0xab
 0x5555555546f9: 0x00 0x00 0x00 0xb8 0x00 0x00 0x00 0x00
 0x555555554701: 0xe8 0x5a 0xfe 0xff 0xff 0xb8 0x00 0x00
-0x555555554709: 0x00 0x00 0xc9 0xc3 0x0f 0x1f 0x00 0x41
-0x555555554711: 0x57 0x41 0x56 0x49 0x89 0xd7 0x41 0x55
+0x555555554709: 0x00 0x00 0xc9 0xc3
 
-# or use disassembler utility by Derek Selander
+# Alternatively we use the disassembler utility by Derek Selander
 #
 # Note: the program must be running (raw input)
 
 (lldb) run
 
-Process 3307 stopped
+Process 5950 stopped
 * thread #1, name = 'swap-V1', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546b1 swap-V1` main  + 8 at swap-V1.c:21
    18  	int main() {
@@ -264,6 +272,7 @@ Process 3307 stopped
    22  	    i2=0x55667788;
    23
    24  	    swap(i1,i2);
+
 
 (lldb) dd main
 swap-V1, main
@@ -314,8 +323,8 @@ swap-V1, main
 
 (lldb) run
 
-Process 3555 stopped
-* thread #1, name = 'swap-V1', stop reason = breakpoint 3.1
+Process 5959 stopped
+* thread #1, name = 'swap-V1', stop reason = breakpoint 1.1
     frame #0: 0x00005555555546b1 swap-V1` main  + 8 at swap-V1.c:21
    18  	int main() {
    19  	    int i1,i2;
@@ -328,15 +337,16 @@ Process 3555 stopped
 # Dump contents of the entire call stack
 (lldb) stack_all 
 
-7fffffffddb8: 00 00 00 00 00 00 00 00
-7fffffffddc0: 10 47 55 55 55 55 00 00  <-- fp of frame #0: main
+7fffffffdda0: 90 de ff ff ff 7f 00 00
+7fffffffdda8: 00 00 00 00 00 00 00 00
+7fffffffddb0: 10 47 55 55 55 55 00 00  <-- fp of frame #0: main
 
 # Show addresses of local variables i1 and i2
 (lldb) p/x &i1
-(int *) $4 = 0x00007fffffffddb8
+(int *) $3 = 0x00007fffffffdda8
 
 (lldb) p/x &i2
-(int *) $5 = 0x00007fffffffddbc
+(int *) $4 = 0x00007fffffffddac
 
 # Execute assignements to i1 and i2 doing two consecutive 's' commands
 
@@ -346,11 +356,13 @@ Process 3555 stopped
 # Dump the stack again
 (lldb) stack_all
 
-7fffffffddb8: 44 33 22 11 88 77 66 55
-7fffffffddc0: 10 47 55 55 55 55 00 00  <-- fp of frame #0: main
+7fffffffdda0: 90 de ff ff ff 7f 00 00
+7fffffffdda8: 44 33 22 11 88 77 66 55
+7fffffffddb0: 10 47 55 55 55 55 00 00  <-- fp of frame #0: main
 
 # Print content of variables i1 and i2
-# Either
+
+# Either via
 
 (lldb) fr v -f x i1 i2
 (int) i1 = 0x11223344
@@ -358,19 +370,18 @@ Process 3555 stopped
 
 # or
 (lldb) p/x i1 
-(int) $7 = 0x11223344
+(int) $5 = 0x11223344
 (lldb) p/x i2
-(int) $8 = 0x55667788
+(int) $6 = 0x55667788
 
 # Raw dump of the frame from top of stack downwards for 32 byte (hex)
 
 (lldb) x/32xb $rsp
-0x7fffffffddb0: 0xa0 0xde 0xff 0xff 0xff 0x7f 0x00 0x00
-0x7fffffffddb8: 0x44 0x33 0x22 0x11 0x88 0x77 0x66 0x55
-0x7fffffffddc0: 0x10 0x47 0x55 0x55 0x55 0x55 0x00 0x00
-0x7fffffffddc8: 0x87 0x3c 0xa0 0xf7 0xff 0x7f 0x00 0x00
+0x7fffffffdda0: 0x90 0xde 0xff 0xff 0xff 0x7f 0x00 0x00
+0x7fffffffdda8: 0x44 0x33 0x22 0x11 0x88 0x77 0x66 0x55
+0x7fffffffddb0: 0x10 0x47 0x55 0x55 0x55 0x55 0x00 0x00
+0x7fffffffddb8: 0x87 0x3c 0xa0 0xf7 0xff 0x7f 0x00 0x00
 
-# Hint:
 # Show current halting position with context
 # Either via
 #     process status
@@ -393,11 +404,11 @@ Process 3555 stopped
 # Either via cont 'c' or via a single step 's'
 
 (lldb) s
-Process 3555 stopped
-* thread #1, name = 'swap-V1', stop reason = breakpoint 4.1
+Process 5959 stopped
+* thread #1, name = 'swap-V1', stop reason = breakpoint 2.1
     frame #0: 0x0000555555554694 swap-V1` swap(a=287454020, b=1432778632)  + 10 at swap-V1.c:13
    10  	#include <stdio.h>
-   11  	
+   11
    12  	void swap(int a, int b) {
 -> 13  	    int tmp = a;
    14  	    a = b;
@@ -409,8 +420,8 @@ Process 3555 stopped
 #
 
 (lldb) register read rbp rsp
-     rbp = 0x00007fffffffdda0
-     rsp = 0x00007fffffffdda0
+     rbp = 0x00007fffffffdd90
+     rsp = 0x00007fffffffdd90
 
 # Uupsi: rbp == rsp !?
 #
@@ -426,9 +437,9 @@ Process 3555 stopped
 
 (lldb) frame variable -f x -L -c
 
-swap-V1.c:12: 0x00007fffffffdd8c: (int) a = 0x11223344
-swap-V1.c:12: 0x00007fffffffdd88: (int) b = 0x55667788
-swap-V1.c:13: 0x00007fffffffdd9c: (int) tmp = 0x00000000
+swap-V1.c:12: 0x00007fffffffdd7c: (int) a = 0x11223344
+swap-V1.c:12: 0x00007fffffffdd78: (int) b = 0x55667788
+swap-V1.c:13: 0x00007fffffffdd8c: (int) tmp = 0x00000000
 
 # Dump the entire call stack using utility function 'stack_all'
 # imported from lldb_stackutils.py
@@ -437,14 +448,14 @@ swap-V1.c:13: 0x00007fffffffdd9c: (int) tmp = 0x00000000
 
 Attention: x64 ABI red zone of leaf frame #0:
 
-7fffffffdd88: 88 77 66 55 44 33 22 11
-7fffffffdd90: 40 3b de f7 ff 7f 00 00
-7fffffffdd98: 00 00 00 00 00 00 00 00
-7fffffffdda0: c0 dd ff ff ff 7f 00 00  <-- fp of frame #0
-7fffffffdda8: ce 46 55 55 55 55 00 00
-7fffffffddb0: a0 de ff ff ff 7f 00 00
-7fffffffddb8: 44 33 22 11 88 77 66 55
-7fffffffddc0: 10 47 55 55 55 55 00 00  <-- fp of frame #1: main
+7fffffffdd78: 88 77 66 55 44 33 22 11
+7fffffffdd80: 40 3b de f7 ff 7f 00 00
+7fffffffdd88: 00 00 00 00 00 00 00 00
+7fffffffdd90: b0 dd ff ff ff 7f 00 00  <-- fp of frame #0
+7fffffffdd98: ce 46 55 55 55 55 00 00
+7fffffffdda0: 90 de ff ff ff 7f 00 00
+7fffffffdda8: 44 33 22 11 88 77 66 55
+7fffffffddb0: 10 47 55 55 55 55 00 00  <-- fp of frame #1: main
 
 # Q: Where are the local vars of swapV1?
 # A: Above the rsp in the red zone of the leaf frame (according to x64 ABI)
@@ -453,7 +464,6 @@ Attention: x64 ABI red zone of leaf frame #0:
 # With utility 'dd' by Derek Salander loaded
 # 
 
-(lldb) dd
 swap-V1, swap
     0    0x55555555468a <+0>:    pushq %rbp
     1    0x55555555468b <+1>:    movq  %rsp,  %rbp
@@ -498,18 +508,19 @@ swap-V1`swap:
 
     0x55555555468a <+0>:  pushq  %rbp
 
-#  * assign rsp = bsp
+#  * assign rbp = rsp
 
     0x55555555468b <+1>:  movq   %rsp, %rbp
 
 #  * move parameters stored in registers onto the stack above rsp!
-#    No 'push' is used!
+#    No 'push' is used on X64
 
     0x55555555468e <+4>:  movl   %edi, -0x14(%rbp)
     0x555555554691 <+7>:  movl   %esi, -0x18(%rbp)
 
-# This is FASTCALL ABI for Intel x64
-# For leave functions the memory region above the stackpointer
+# This implements the FASTCALL ABI for Intel x64
+# For leave functions (functions at the top of the call stack)
+# the memory region above the stackpointer
 #    ]sp, sp + 256]
 # is called the 'red zone' of the top most stack frame
 

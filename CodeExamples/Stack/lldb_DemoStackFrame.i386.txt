@@ -101,9 +101,9 @@ or simply
 (lldb) <enter> will execute last command once more
 ...
 
-Process 3149 stopped
+Process 2105 stopped
 * thread #1, name = 'swap-V1', stop reason = step in
-    frame #0: 0x00005555555546ce swap-V1` main  + 37 at swap-V1.c:26
+    frame #0: 0x004011f7 swap-V1` main  + 57 at swap-V1.c:26
    23
    24  	    swap(i1,i2);
    25
@@ -568,7 +568,7 @@ swap-V1`swap:
 
     0x401199 <+0>:  pushl  %ebp
 
-#  * assign esp = ebp
+#  * assign ebp = ebp
     0x40119a <+1>:  movl   %esp, %ebp
 
 #  * reservation of stack space for local variables of function swap
