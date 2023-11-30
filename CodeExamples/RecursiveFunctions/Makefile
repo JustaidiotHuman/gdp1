@@ -32,8 +32,7 @@ LDFLAGS =
 MACHINE := $(shell uname -m)
 $(info $$MACHINE is $(MACHINE))
 ifeq ($(MACHINE), i686)
-  EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=4 -mno-accumulate-outgoing-args
-  #EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2
+  EXTRA_FLAGS = -mpush-args -mpreferred-stack-boundary=2 -mno-accumulate-outgoing-args
 else ifeq ($(MACHINE), armv7l)
   EXTRA_FLAGS = 
 else ifeq ($(MACHINE), arm64)

@@ -10,12 +10,9 @@ Erklären:
 	-> -mpush-args
 	-> -mpreferred-stack-boundary=4
 
-$ gdbtui -q bin/factorial
+$ gdbtui -q bin/factorial -x gdb.demo
 
 #-----------------------------------------
-
-(gdb) source gdb.demo
-
 # Skript gdb.demo führt aus:
 # source gdb.stackdump
 # 
@@ -32,79 +29,12 @@ $ gdbtui -q bin/factorial
 
 # danach nur noch eingeben
 
-cont
+(gdb) cont
 
 # oder für erneute Ausführung
 #
 # run 4
 #-----------------
-
-Manuell Stack ausgeben mittels
-
-(gdb) stack_all32 
------------
-0xbffff8a0: 0xffffffff
-0xbffff8a4: 0x00166196
-0xbffff8a8: 0x002d7ff4
-0xbffff8ac: 0x00166225
-0xbffff8b0: 0x0011f280
-0xbffff8b4: 0x00000000
-0xbffff8b8: 0x080484e9
-0xbffff8bc: 0x002d7ff4
-0xbffff8c0: 0x080484e0
-0xbffff8c4: 0x00000000
-0xbffff8c8: 0x00000000 <--- fp 0
-
-(gdb) cont
-Continuing.
-
-Breakpoint 2, factorial (n=4) at factorial.c:8
-
-(gdb)
------------
-0xbffff880: 0xbffffb0c <--- Stack Alignement auf 2^4
-0xbffff884: 0x00000000
-0xbffff888: 0x0000000a
-0xbffff88c: 0x00164620
-0xbffff890: 0xbffffb0c
-0xbffff894: 0x00131918
-0xbffff898: 0xbffff8c8 <--- fp 0
-0xbffff89c: 0x080484b3
-0xbffff8a0: 0x00000004 <--- Parameter n für Aufruf factorial(4)
-0xbffff8a4: 0x00166196
-0xbffff8a8: 0x002d7ff4
-0xbffff8ac: 0x00166225
-0xbffff8b0: 0x0011f280
-0xbffff8b4: 0x00000000
-0xbffff8b8: 0x080484e9
-0xbffff8bc: 0x00000004
-0xbffff8c0: 0x080484e0
-0xbffff8c4: 0x00000000
-0xbffff8c8: 0x00000000 <--- fp 1
------------
-
-Beobachtung: Stack ist unnötig groß!
-Grund: Alignement TOS auf 2^4.
-
-GDB-Session abbrechen
-
-#----------------------
-
-Dann Binary neu übersetzen:
-
-gcc -mpush-args -mpreferred-stack-boundary=2 \
-    -g -Wall factorial.c -o bin/factorial
-
-#-----------------------
-
-Demo nochmals
--> Stackframes sind kleiner da auf 2^2 aligned statt auf 2^4
-
-(gdb) source gdb.demo
-
-#-----------------
-
-(gdb) cont
 
 -----------
 0xbffff8b8: 0x080484d9
@@ -201,6 +131,3 @@ GDB-Session abbrechen
 oder binary erneut starten via 
 
 run 4
-
-
-
