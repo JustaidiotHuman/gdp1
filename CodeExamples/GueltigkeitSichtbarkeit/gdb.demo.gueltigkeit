@@ -1,7 +1,7 @@
 source gdb.stackdump
 break main
 winheight src 13
-set disassembly-flavor intel
+set disassembly-flavor att
 run
 set_bfp
 

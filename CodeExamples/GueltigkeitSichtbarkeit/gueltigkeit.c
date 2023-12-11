@@ -9,11 +9,8 @@ void first(){
 
 void second(){
   int b;
-  // Was passiert, wenn man die Zuweisung erst nach dem
-  // zweiten printf() ausführt?
-  // Was wird hier ausgegeben?
-  printf("%ld\n", sizeof(b));
-  printf("b=%x\n",b);
+  printf("%zd\n", sizeof(b));
+  printf("b=%x\n",b);  // was wird hier ausgegeben?
   b = 0x55667788;
   printf("b=%x\n",b);
 }
