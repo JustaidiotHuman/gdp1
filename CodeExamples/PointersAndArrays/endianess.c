@@ -27,7 +27,7 @@ int main(void){
     {0x5566, 0x7788},
   };
 
-  printf("sizeof(short)=%d\n", sizeof(short));
+  printf("sizeof(short)=%zd\n", sizeof(short));
   printf("\n");
 
   dumpArrayAsShort((unsigned short *) as, 4); // mit cast
