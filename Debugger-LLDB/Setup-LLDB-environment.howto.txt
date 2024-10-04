@@ -176,7 +176,7 @@ lrwxrwxrwx 1 root root     29 Mär 24  2022 _lldb.cpython-310-x86_64-linux-gnu.s
 
 cd /usr/lib/llvm-14/lib/python3.10/dist-packages/lldb
 
-ls - la
+ls -la
 
 rm lldb-argdumper
 rm _lldb.cpython-310-x86_64-linux-gnu.so
