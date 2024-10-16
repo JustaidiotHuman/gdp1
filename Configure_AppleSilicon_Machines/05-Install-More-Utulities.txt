@@ -1,9 +1,0 @@
-# Install the app 'pidof'
-
-brew install pidof
-
-# Install utility 'tree'
-
-brew install tree
-
-
