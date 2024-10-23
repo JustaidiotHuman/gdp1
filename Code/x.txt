@@ -1,0 +1,2 @@
+gcc -g -Wall -o bin/myname myName.c
+

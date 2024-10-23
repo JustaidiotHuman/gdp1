@@ -1,3 +1,5 @@
+#Ignore files in bin
+Code/*/bin/*
 # Ignore derived files
 *.o
 bin/
