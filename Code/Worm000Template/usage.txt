@@ -1,5 +1,0 @@
-Usage:
-Waehrend der Laufzeit werden folgende Tasten speziell behandelt:
-
-Das Druecken einer beliebigen Taste beendet das Programm.
-
