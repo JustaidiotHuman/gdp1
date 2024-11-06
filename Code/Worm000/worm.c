@@ -78,7 +78,7 @@ int main(void) {
     } else {
         // Center output
         int mid_row = LINES / 2;
-        int start_col = COLS / 2 - msg_len / 2;
+        int start_col = (COLS - msg_len) / 2;
 
         // Write letter A to the top    left  corner of our display
         move(0, 0);          // Move to position
