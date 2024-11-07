@@ -79,7 +79,7 @@ enum ColorPairs theworm_wcolor;
 // Management of the game
 void initializeColors();
 void readUserInput(enum GameStates* agame_state );
-int doLevel();
+enum ResCodes doLevel();
 
 // Standard curses initialization and cleanup
 void initializeCursesApplication(); 
@@ -92,7 +92,7 @@ int getLastRow();
 int getLastCol();
 
 // Functions concerning the management of the worm data
-int initializeWorm(int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color);
+enum ResCodes initializeWorm(int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color);
 void showWorm();
 void moveWorm(enum GameStates* agame_state);
 void setWormHeading(enum WormHeading dir);
@@ -328,7 +328,7 @@ void moveWorm(enum GameStates* agame_state) {
 }
 
 // Setters
-void setWormHeading(enum WormHeadin dir) {
+void setWormHeading(enum WormHeading dir) {
     switch(dir) {
         case WORM_UP :// User wants up
             theworm_dx=0;
