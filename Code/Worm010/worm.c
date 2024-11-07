@@ -279,7 +279,7 @@ int getLastCol() {
 // The following functions all depend on the model of the worm
 
 // Initialize the worm
-enum ResCodes initializeWorm(int headpos_y, int headpos_x, enum WormHeadin dir, enum ColorPairs color) {
+enum ResCodes initializeWorm(int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color) {
     // Initialize position of worms head
     theworm_headpos_y = headpos_y;
     theworm_headpos_x = headpos_x;
