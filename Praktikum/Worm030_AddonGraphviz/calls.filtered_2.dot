@@ -1,0 +1,81 @@
+// Spezifikation des Call-Graphen fuer Worm030
+//
+
+digraph Worm030 {
+
+  // Spezifikation der Kanten: entspricht den Aufrufen
+
+  placeItem ->  move;
+  placeItem ->  attron;
+  placeItem ->  addch;
+  placeItem ->  attroff;
+
+  initializeCursesApplication -> initscr;
+  initializeCursesApplication -> noecho;
+  initializeCursesApplication -> cbreak;
+  initializeCursesApplication -> nonl;
+  initializeCursesApplication -> keypad;
+  initializeCursesApplication -> curs_set;
+  initializeCursesApplication -> nodelay;
+
+  cleanupCursesApp -> standend;
+  cleanupCursesApp -> refresh;
+  cleanupCursesApp -> curs_set;
+  cleanupCursesApp -> endwin;
+
+  initializeColors -> start_color;
+  initializeColors -> init_pair;
+
+  readUserInput -> setWormHeading;
+  readUserInput -> nodelay;
+
+  doLevel -> getLastRow;
+  doLevel -> initializeWorm;
+  doLevel -> showWorm;
+  doLevel -> refresh;
+  doLevel -> readUserInput;
+  doLevel -> cleanWormTail;
+  doLevel -> moveWorm;
+  doLevel -> napms;
+
+  main -> initializeCursesApplication;
+  main -> initializeColors;
+  main -> doLevel;
+  main -> cleanupCursesApp;
+
+  initializeWorm -> setWormHeading;
+  showWorm -> placeItem;
+
+  cleanWormTail -> placeItem;
+
+  moveWorm -> getLastCol;
+  moveWorm -> getLastRow;
+  moveWorm -> isInUseByWorm;
+
+// Spezifikation der Knoten: Knoten entsprechen den Funktionen.
+// Die Sektion ist nur notwendig, falls man spezielle Attribute fuer
+// die Knoten vereinbaren will (Farbe etc.)
+
+  // Funktionen der Curses-Bibliothek
+  move [color=blue, shape=rectangle];
+  attron [color=blue, shape=rectangle];
+  addch [color=blue, shape=rectangle];
+  attroff [color=blue, shape=rectangle];
+  napms [color=blue, shape=rectangle];
+  start_color [color=blue, shape=rectangle];
+  refresh [color=blue, shape=rectangle];
+  init_pair [color=blue, shape=rectangle];
+  endwin [color=blue, shape=rectangle];
+  standend [color=blue, shape=rectangle];
+  curs_set [color=blue, shape=rectangle];
+  noecho [color=blue, shape=rectangle];
+  initscr [color=blue, shape=rectangle];
+  keypad [color=blue, shape=rectangle];
+  nonl [color=blue, shape=rectangle];
+  cbreak [color=blue, shape=rectangle];
+  nodelay [color=blue, shape=rectangle];
+
+  // Eine zentrale Funktion
+  doLevel [color=red, style=filled];
+
+}

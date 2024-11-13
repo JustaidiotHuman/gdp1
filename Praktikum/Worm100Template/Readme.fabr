@@ -1,0 +1,10 @@
+Final version of game WORM
+
+New in this version
+
+- user worm is optional
+- arbitrary number of system worms (modul sysworm)
+- enhanced Makefile for building a statically linked binary
+  and a distribution
+
+

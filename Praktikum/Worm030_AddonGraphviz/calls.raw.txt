@@ -1,0 +1,67 @@
+board_model.c:void placeItem(int y, int x, chtype symbol, enum ColorPairs color_pair) {
+board_model.c:    move(y, x);                         // Move cursor to (y,x)
+board_model.c:    attron(COLOR_PAIR(color_pair));     // Start writing in selected color
+board_model.c:    addch(symbol);                      // Store symbol on the virtual display
+board_model.c:    attroff(COLOR_PAIR(color_pair));    // Stop writing in selected color
+board_model.c:int getLastRow() {
+board_model.c:int getLastCol() {
+prep.c:void initializeCursesApplication() {
+prep.c:    initscr(); // Initialize the curses screen
+prep.c:    // The call to initscr() defines various global variables of the curses framework.
+prep.c:    noecho();  // Characters typed ar not echoed
+prep.c:    cbreak();  // No buffering of stdin
+prep.c:    nonl();    // Do not translate 'return key' on keyboard to newline character
+prep.c:    keypad(stdscr, TRUE); // Enable the keypad
+prep.c:    curs_set(0);          // Make cursor invisible
+prep.c:    nodelay(stdscr, TRUE);  // make getch to be a non-blocking call
+prep.c:void cleanupCursesApp(void)
+prep.c:    standend();   // Turn off all attributes
+prep.c:    refresh();    // Write changes to terminal
+prep.c:    curs_set(1);  // Set cursor state to normal visibility
+prep.c:    endwin();     // Terminate curses application
+worm.c:void initializeColors() {
+worm.c:    start_color();
+worm.c:    init_pair(COLP_USER_WORM,     COLOR_GREEN,    COLOR_BLACK);
+worm.c:    init_pair(COLP_FREE_CELL,     COLOR_BLACK,    COLOR_BLACK);
+worm.c:void readUserInput(enum GameStates* agame_state ) {
+worm.c:    if ((ch = getch()) > 0) {
+worm.c:        switch(ch) {
+worm.c:                setWormHeading(WORM_UP);
+worm.c:                setWormHeading(WORM_DOWN);
+worm.c:                setWormHeading(WORM_LEFT);
+worm.c:                setWormHeading(WORM_RIGHT);
+worm.c:                nodelay(stdscr, FALSE);  // We simply make getch blocking
+worm.c:                nodelay(stdscr, TRUE);   // Make getch non-blocking again
+worm.c:enum ResCodes doLevel() {
+worm.c:    bottomLeft_y =  getLastRow();
+worm.c:    res_code = initializeWorm(WORM_LENGTH, bottomLeft_y, bottomLeft_x , WORM_RIGHT, COLP_USER_WORM);
+worm.c:    showWorm();
+worm.c:    refresh();
+worm.c:    while(!end_level_loop) {
+worm.c:        readUserInput(&game_state); 
+worm.c:        cleanWormTail();
+worm.c:        moveWorm(&game_state);
+worm.c:        showWorm();
+worm.c:        napms(NAP_TIME);
+worm.c:        refresh();
+worm.c:int main(void) {
+worm.c:    initializeCursesApplication();  // Init various settings of our application
+worm.c:    initializeColors();             // Init colors used in the game
+worm.c:        // the call of cleanupCursesApp()
+worm.c:        cleanupCursesApp();
+worm.c:        printf("Das Fenster ist zu klein: wir brauchen mindestens %dx%d\n",
+worm.c:        res_code = doLevel();
+worm.c:        cleanupCursesApp();
+worm_model.c:enum ResCodes initializeWorm(int len_max, int headpos_y, int headpos_x, enum WormHeading dir,
+worm_model.c:    setWormHeading(dir);
+worm_model.c:void showWorm() {
+worm_model.c:    placeItem(
+worm_model.c:void cleanWormTail() {
+worm_model.c:        placeItem(theworm_wormpos_y[tailindex], theworm_wormpos_x[tailindex],
+worm_model.c:void moveWorm(enum GameStates* agame_state) {
+worm_model.c:    } else if (headpos_x > getLastCol() ) { 
+worm_model.c:    } else if (headpos_y > getLastRow() ) {
+worm_model.c:        if (isInUseByWorm(headpos_y, headpos_x)) {
+worm_model.c:bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
+worm_model.c:void setWormHeading(enum WormHeading dir) {
+worm_model.c:    switch(dir) {

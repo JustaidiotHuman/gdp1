@@ -1,0 +1,55 @@
+// Spezifikation des Call-Graphen fuer Worm030
+// Einfachste Form
+
+digraph Worm030 {
+
+  // Spezifikation der Kanten: entspricht den Aufrufen
+  // Die Knoten werden damit implizit definiert
+
+  placeItem ->  move;
+  placeItem ->  attron;
+  placeItem ->  addch;
+  placeItem ->  attroff;
+
+  initializeCursesApplication -> initscr;
+  initializeCursesApplication -> noecho;
+  initializeCursesApplication -> cbreak;
+  initializeCursesApplication -> nonl;
+  initializeCursesApplication -> keypad;
+  initializeCursesApplication -> curs_set;
+  initializeCursesApplication -> nodelay;
+
+  cleanupCursesApp -> standend;
+  cleanupCursesApp -> refresh;
+  cleanupCursesApp -> curs_set;
+  cleanupCursesApp -> endwin;
+
+  initializeColors -> start_color;
+  initializeColors -> init_pair;
+
+  readUserInput -> setWormHeading;
+  readUserInput -> nodelay;
+
+  doLevel -> getLastRow;
+  doLevel -> initializeWorm;
+  doLevel -> showWorm;
+  doLevel -> refresh;
+  doLevel -> readUserInput;
+  doLevel -> cleanWormTail;
+  doLevel -> moveWorm;
+  doLevel -> napms;
+
+  main -> initializeCursesApplication;
+  main -> initializeColors;
+  main -> doLevel;
+  main -> cleanupCursesApp;
+
+  initializeWorm -> setWormHeading;
+  showWorm -> placeItem;
+
+  cleanWormTail -> placeItem;
+
+  moveWorm -> getLastCol;
+  moveWorm -> getLastRow;
+  moveWorm -> isInUseByWorm;
+}

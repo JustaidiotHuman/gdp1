@@ -1,0 +1,38 @@
+Build:
+
+    make: erzeugt das Binary
+    make clean: raeumt .o, bin/* auf
+    make dist: erzeugt eine statisch gelinkte Distribution im Unterverzeichnis dist
+    make distclean: raeumt dist auf
+
+Usage:
+
+-h  : zeigt Usage in Kurzform an
+
+-s  : schalte Single-Step schon beim Start ein.
+    (Tasten 's' und ' ' waehrend des Spiels)
+
+-n s: Zeit s in Millisekunden zwischen zwei Schleifendurchlaeufen der Event-Loop
+
+-A n: generiere n automatische Wuermer
+
+-a  : zeige Autowuermer schon ab Start (Taste 'a' waehrend des Spiels)
+
+-u  : zeige keinen User-Wurm.
+      Damit laeuft die Anwendung quasi als Bildschirmschoner
+
+Dateiname: die angegebene Datei wird als Level geladen
+
+
+Waehrend der Laufzeit werden folgende Tasten speziell behandelt:
+
+Richtungstasten (Pfeiltasten): steuern den Wurm des Benutzers
+a: zeige Autowuermer an/aus
+u: zeige Userwurm an/aus
+q: beendet das Spiel
+g: fuer DEBUG: Wurm waechst, als wenn er einen Futterbrocken der
+    Kategorie 3 gefressen haette.
+x: fuer DEBUG: Anzahl der Futterbrocken wird auf 0 gesetzt -> start next level
+s: schaltet Single Step ein
+Leertaste: schalte Single Step aus
+

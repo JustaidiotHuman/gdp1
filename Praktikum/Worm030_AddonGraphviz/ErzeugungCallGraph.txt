@@ -1,0 +1,40 @@
+Halbautomatische Erzeugung eines Call-Graphs für ein C-Programm
+===============================================================
+
+Vorgehen:
+
+1) Extraktion aller Functionsdefinitionen und Funktionsaufrufe per Filter egrep
+2) Manuelle Filterung und Umwandlung in Eingabeformat für Graphviz
+3) Automatisches Layout des Graphen durch Graphviz
+
+#-------------------------------------------------------------------------------
+ad 1) Extraktion aller Functionsdefinitionen und Funktionsaufrufe per Filter egrep
+
+Um beispielsweise den Call-Graphen für die Version Worm030 zu erstellen:
+
+$ cd ~/GdPIP/Code/Worm030
+$ egrep '\w\(' *.c > calls.raw.txt
+
+
+#-------------------------------------------------------------------------------
+ad 2) Manuelle Filterung und Umwandlung in Eingabeformat für Graphviz
+
+Wir separieren Definitionen und Aufrufe manuell
+und nutzen die Beschreibungssprache von Graphviz,
+um den Call-Graphen zu spezifizieren
+
+Aus calls.raw.txt entsteht so die Datei calls.filtered_1.dot
+
+#-------------------------------------------------------------------------------
+ad 3) Wir rufen den Viewer xdot auf
+
+$ xdot calls.filtered_1.dot &
+
+#-------------------------------------------------------------------------------
+Verbesserungen in der Darstellung kann man durch zusätzliche Spezifikation
+von Eigenschaften für Knoten und Kanten erreichen.
+Siehe Datei calls.filtered_2.dot
+
+$ xdot calls.filtered_2.dot &
+
+
