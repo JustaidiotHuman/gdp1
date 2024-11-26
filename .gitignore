@@ -1,5 +1,5 @@
 #Ignore files in bin
-Code/*/bin/*
+Praktikum/Code/*/bin/*
 # Ignore derived files
 *.o
 bin/
