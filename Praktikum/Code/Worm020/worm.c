@@ -319,7 +319,7 @@ enum ResCode initializeWorm(int len_max, int headpos_y, int headpos_x,
   // length). An unused position in the array is marked with code
   // UNUSED_POS_ELEMENT
 
-  for (int i = 0; i <= len_max; i++) {
+  for (int i = 0; i < len_max; i++) {
     theworm_wormpos_y[i] = UNUSED_POS_ELEMENT;
     theworm_wormpos_x[i] = UNUSED_POS_ELEMENT;
   }
@@ -348,7 +348,7 @@ void showWorm() {
 // Cleanup worm tail element
 void cleanWormTail() {
 
-  // calc tail index
+  // calc tail index 
   int tail_index = (theworm_headindex + 1) % theworm_maxindex;
 
   // Check if the tail element is in use
@@ -381,7 +381,7 @@ void moveWorm(enum GameState *agame_state) {
     // We will stay within bounds.
     // Check if the worm's head will collide with itself at the new position
     if (isInUseByWorm(headpos_y, headpos_x)) {
-      // Not so good -> Stop the game
+      // Stop the game
       *agame_state = WORM_CROSSING;
     }
   }
@@ -412,7 +412,7 @@ bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
     }
 
     i++;
-  } while (i != theworm_maxindex &&
+  } while (i <= theworm_maxindex &&
            theworm_wormpos_x[i] != UNUSED_POS_ELEMENT);
 
   return collision;
