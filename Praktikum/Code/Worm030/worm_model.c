@@ -19,31 +19,31 @@
 #include <curses.h>
 
 // Last usable index for the arrays `theworm_wormpos_y` and `thworm_wormpos_x`
-static int theworm_max_index;
+int theworm_max_index;
 
 // An index for the array for the worm's head position
 // 0 <= theworm_headindex <= theworm_maxindex
-static int theworm_head_index;
+int theworm_head_index;
 
 // Data defining the worm
 // Array of y positions for worm elements
-static int theworm_wormpos_y[WORM_LENGTH];
+int theworm_wormpos_y[WORM_LENGTH];
 
 // Array of x positions for worm elements
-static int theworm_wormpos_x[WORM_LENGTH];
+int theworm_wormpos_x[WORM_LENGTH];
 
 // The current heading of the worm
 // These are offsets from the set {-1,0,+1}
-static int theworm_dx;
-static int theworm_dy;
+int theworm_dx;
+int theworm_dy;
 
 // Code of color pair used for the worm
-static enum ColorPair theworm_wcolor;
+enum ColorPair theworm_wcolor;
 
 // ### START WORM_DETAIL ###
 
 // Initialize the worm
-enum ResCode initializeWorm(int len_max, int headpos_y, int headpos_x,
+extern enum ResCode initializeWorm(int len_max, int headpos_y, int headpos_x,
                             enum WormHeading dir, enum ColorPair color) {
   // Initialize last usable index to len_max - 1
   theworm_max_index = len_max - 1;
@@ -73,7 +73,7 @@ enum ResCode initializeWorm(int len_max, int headpos_y, int headpos_x,
 
 // Show the worms's elements on the display
 // Simple version
-void showWorm() {
+extern void showWorm() {
   // Due to our encoding we just need to show the head element
   // All other elements are already displayed
   placeItem(theworm_wormpos_y[theworm_head_index],
@@ -82,7 +82,7 @@ void showWorm() {
 }
 
 // Cleanup worm tail element
-void cleanWormTail() {
+extern void cleanWormTail() {
   int tail_index;
 
   // Compute tail_index (ring buffer)
@@ -97,7 +97,7 @@ void cleanWormTail() {
   }
 }
 
-void moveWorm(enum GameState *agame_state) {
+extern void moveWorm(enum GameState *agame_state) {
   // Get the current position of the worm's head element
   int headpos_x = theworm_wormpos_x[theworm_head_index];
   int headpos_y = theworm_wormpos_y[theworm_head_index];
@@ -138,7 +138,7 @@ void moveWorm(enum GameState *agame_state) {
 }
 
 // collision detection
-bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
+extern bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
   int i = 0;
   bool collision = false;
 
@@ -160,7 +160,7 @@ bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
 }
 
 
-void setWormHeading(enum WormHeading dir) {
+extern void setWormHeading(enum WormHeading dir) {
   switch (dir) {
   case WORM_UP:
     if (theworm_dy == 1) {
